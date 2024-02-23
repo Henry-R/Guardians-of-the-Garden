@@ -31,3 +31,23 @@ class PlantOfTheDay(models.Model):
 
     def __str__(self):
         return self.plant.name
+    
+class Rarity(models.Models):
+    rarity_id = models.AutoField(primary_key=True)
+    rarity_desc = models.CharField(max_length=10)
+    rarity_points = models.IntegerField()
+    rarity_colour = models.CharField()
+
+    def __str__(self):
+        return self.name
+
+
+class Card(models.Model):
+    card_id = models.AutoField(primary_key=True)
+    species = models.CharField(max_length=30)
+    rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
+
+class UsersCard(models.Model):
+    users_cards_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    card_id = models.ForeignObject(Card, on_delete=models.CASCADE)    
