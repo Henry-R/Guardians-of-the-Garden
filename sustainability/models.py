@@ -10,6 +10,7 @@ class Plant(models.Model):
     plant_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     description = models.TextField()
+    plant_photo = models.ImageField(default='images/plant_default.jpg', upload_to='static/images')
 
     def __str__(self):
         return self.name
@@ -31,29 +32,31 @@ class PlantOfTheDay(models.Model):
 
     def __str__(self):
         return self.plant.name
-    
-class Rarity(models.Models):
+
+
+class Rarity(models.Model):
     rarity_id = models.AutoField(primary_key=True)
     rarity_desc = models.CharField(max_length=10)
     rarity_points = models.IntegerField()
-    rarity_colour = models.CharField()
+    rarity_colour = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.name
+        return self.rarity_desc
 
 
 class Card(models.Model):
     card_id = models.AutoField(primary_key=True)
-    species = models.CharField(max_length=30)
+    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE)
     rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.plant_id
+
 
 class UsersCard(models.Model):
     users_cards_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    card_id = models.ForeignObject(Card, on_delete=models.CASCADE)    
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.card_id

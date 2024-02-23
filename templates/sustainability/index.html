@@ -1,7 +1,9 @@
 {% extends 'sustainability/base.html' %}
 {% block title %}Index{% endblock %}
 {% block content %}
+    {% load static %}
 <body>
  <h3>Current Plant of the Day: {{ current_plant }}</h3>
+<img src="{{   current_plant.plant.plant_photo.url  }}" alt="plant_photo" >
 </body>
 {% endblock %}
