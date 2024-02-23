@@ -47,7 +47,13 @@ class Card(models.Model):
     species = models.CharField(max_length=30)
     rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 class UsersCard(models.Model):
     users_cards_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     card_id = models.ForeignObject(Card, on_delete=models.CASCADE)    
+
+    def __str__(self):
+        return self.name
