@@ -42,3 +42,7 @@ def account_view(request):
 @login_required()
 def leaderboard_view(request):
     return render(request, 'sustainability/leaderboard.html')
+
+@login_required()
+def users_cards_view(request):
+    return render(request, 'sustainability/cards.html')
