@@ -1,12 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" type ="text/css" href="css/styles.css">
-    <title>Cards</title>
-
-</head>
-
 {% extends 'sustainability/base.html' %}
 
 
-</html>
+{% block title %}
+    Card collection
+{% endblock %}
+
+
+
+{% block content %}
+{%  for Card in cards %} 
+    
+    {% include 'sustainability/plant_card.html' with plant=Card %}
+    
+{% endfor %}
+{% endblock %}

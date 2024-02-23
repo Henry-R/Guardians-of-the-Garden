@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +56,7 @@
         Plant
     </div>
     <div class="card-body">
-        <img src="{% static 'images/plant_default.jpg' %}" alt="Plant Photo" class="plant-photo">
+        <img src="{{ Card.plant_photo.url }}" alt="Plant Photo" class="plant-photo">
         <div class="attribute">
             <span>Name:</span> {{ plant.name }}
         </div>

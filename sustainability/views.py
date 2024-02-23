@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 
 from sustainability.forms import PlantOfTheDayForm
-from sustainability.models import PlantOfTheDay
+from sustainability.models import PlantOfTheDay, Plant
 from sustainability.permissions import ADD_PLANT_OF_THE_DAY
 
 @login_required()
@@ -15,6 +15,7 @@ def home(request):
     except PlantOfTheDay.DoesNotExist:
         current_plant = None
     return render(request, 'sustainability/index.html', {'current_plant': current_plant})
+
 
 @login_required()
 @permission_required('sustainability.add_plant_of_the_day', raise_exception=True)
@@ -45,4 +46,5 @@ def leaderboard_view(request):
 
 @login_required()
 def users_cards_view(request):
-    return render(request, 'sustainability/cards.html')
+    cards = Plant.objects.all()
+    return render(request, 'sustainability/cards.html', context={'cards': cards})
