@@ -50,7 +50,7 @@ class Card(models.Model):
     rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.plant_id
+        return self.plant_id.name
 
 
 class UsersCard(models.Model):
@@ -59,4 +59,4 @@ class UsersCard(models.Model):
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.card_id
+        return self.card_id.plant_id.name

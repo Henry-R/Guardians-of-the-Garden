@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 
 from sustainability.forms import PlantOfTheDayForm
-from sustainability.models import PlantOfTheDay, Plant
+from sustainability.models import PlantOfTheDay, Plant, Card
 from sustainability.permissions import ADD_PLANT_OF_THE_DAY
 
 @login_required()
@@ -46,5 +46,5 @@ def leaderboard_view(request):
 
 @login_required()
 def users_cards_view(request):
-    cards = Plant.objects.all()
+    cards = Card.objects.all()
     return render(request, 'sustainability/cards.html', context={'cards': cards})

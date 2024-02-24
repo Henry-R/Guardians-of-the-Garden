@@ -1,6 +1,5 @@
 {% extends 'sustainability/base.html' %}
 
-
 {% block title %}
     Card collection
 {% endblock %}
@@ -10,7 +9,7 @@
 {% block content %}
 {%  for Card in cards %} 
     
-    {% include 'sustainability/plant_card.html' with plant=Card %}
+    {% include 'sustainability/plant_card.html' with card=Card %}
     
 {% endfor %}
 {% endblock %}
