@@ -13,7 +13,7 @@ from sustainability.permissions import ADD_PLANT_OF_THE_DAY
 @login_required()
 def home(request):
     try:
-        current_plant = PlantOfTheDay.objects.get(date=timezone.now().date())
+        current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
     except PlantOfTheDay.DoesNotExist:
         current_plant = None
     return render(request, 'sustainability/index.html', {'current_plant': current_plant})
@@ -33,7 +33,7 @@ def plant_of_the_day_view(request):
     else:
         form = PlantOfTheDayForm()
         try:
-            current_plant = PlantOfTheDay.objects.get(date=timezone.now().date())
+            current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
         except PlantOfTheDay.DoesNotExist:
             current_plant = "Not selected"
     return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant})
