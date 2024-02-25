@@ -1,11 +1,11 @@
 {% load static %}
 
 
-<div class="card" style="background-color: {{ card.rarity_id.rarity_colour }}">
+<div class="card" style="background-color: {{card.rarity_id.rarity_colour}}">
     <div class="card-header">
         {{ card.plant_id.name }}
     </div>
-   <div class="card">
+   <div class="card-body">
         <img src="{{ card.plant_id.plant_photo.url }}" alt="Plant Photo" class="plant-photo">
        
         <div class="attribute">

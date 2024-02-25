@@ -1,4 +1,32 @@
 
+.navbar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #a1dc8b;
+    min-height: 50px;
+}
+
+.navbar ul li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.navbar li a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar li a:hover {
+    background-color: #6ea156; 
+}
+
+.logout {
+    float: right;
+}
 
 .card{
     width: 300px;
@@ -37,3 +65,5 @@
     object-fit: cover;
     margin-bottom: 10px;
 }
+
+

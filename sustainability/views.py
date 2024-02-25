@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import get_user
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -6,6 +7,7 @@ from django.utils import timezone
 
 from sustainability.forms import PlantOfTheDayForm
 from sustainability.models import PlantOfTheDay, Plant, Card
+from django.contrib.auth.models import User
 from sustainability.permissions import ADD_PLANT_OF_THE_DAY
 
 @login_required()
@@ -48,3 +50,8 @@ def leaderboard_view(request):
 def users_cards_view(request):
     cards = Card.objects.all()
     return render(request, 'sustainability/cards.html', context={'cards': cards})
+
+@login_required()
+def user_account_view(request):
+    user = get_user(request)
+    return render(request, 'sustainability/account.html', context={'user':user})
