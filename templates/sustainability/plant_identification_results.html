@@ -1,0 +1,19 @@
+{% extends 'sustainability/base.html' %}
+
+{% block content %}
+  <h2>Plant Identification Result</h2>
+  {% if best_match %}
+    <p><strong>Best Match:</strong> {{ best_match }}</p>
+  {% endif %}
+  {% if result %}
+    <div>
+      <h3>Details</h3>
+      <p><strong>Scientific Name:</strong> {{ result.species.scientificName }}</p>
+      <p><strong>Common Names:</strong> {{ result.species.commonNames|join:", " }}</p>
+      <p><strong>Family:</strong> {{ result.species.family.scientificName }}</p>
+      <p><strong>Score:</strong> {{ result.score }}</p>
+    </div>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endblock %}

@@ -9,3 +9,6 @@ class PlantOfTheDayForm(forms.ModelForm):
     class Meta:
         model = PlantOfTheDay
         fields = ['plant']
+
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField(label='Select a plant image to identify')
