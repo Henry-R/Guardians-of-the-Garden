@@ -23,13 +23,11 @@
                     <a href="{% url 'leaderboard' %}">Leaderboard</a>
                  {% if perms.sustainability.ADD_PLANT_OF_THE_DAY %}
                     <a href="{% url 'plant_of_the_day_view' %}">Edit Plant of the day</a>
+                        {% endif %}
                     <a href="{% url 'upload-plant-image' %}">Identify Plant</a>
+                  
                 </li>
-                <li>
-                    {% if perms.sustainability.ADD_PLANT_OF_THE_DAY %}
-                        <a href="{% url 'plant_of_the_day_view' %}">Edit Plant of the day</a>
-                    {% endif %}
-                </li>
+               
             {% else %}
                 <li>
                     <a href="{% url 'login' %}">Login</a>
