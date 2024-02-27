@@ -55,7 +55,8 @@ def leaderboard_view(request):
 @login_required()
 def users_cards_view(request):
     cards = Card.objects.all()
-    return render(request, 'sustainability/cards.html', context={'cards': cards})
+    user = Client.objects.get()
+    return render(request, 'sustainability/cards.html', context={'cards': cards, 'user': user})
 
 @login_required()
 def user_account_view(request):

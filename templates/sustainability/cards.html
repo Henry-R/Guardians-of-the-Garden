@@ -8,8 +8,8 @@
 
 {% block content %}
 {%  for Card in cards %} 
-    
-    {% include 'sustainability/plant_card.html' with card=Card %}
+    {% if user.  %}
+    {% include 'sustainability/plant_card_disabled.html' with card=Card %}
     
 {% endfor %}
 {% endblock %}
