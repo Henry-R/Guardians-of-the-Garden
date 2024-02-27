@@ -8,4 +8,5 @@ admin.site.register(Rarity)
 admin.site.register(Card)
 admin.site.register(UsersCard)
 
+
 # Register your models here.
