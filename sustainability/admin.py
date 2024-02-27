@@ -7,4 +7,5 @@ admin.site.register(Plant)
 admin.site.register(Rarity)
 admin.site.register(Card)
 
+
 # Register your models here.
