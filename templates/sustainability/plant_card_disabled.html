@@ -1,0 +1,17 @@
+{% load static %}
+
+<div class="card" style="filter: brightness(30%); background-color: rgba(0, 0, 0, 0.5)">
+    <div class="card-header">
+        {{ card.plant_id.name }}
+    </div>
+   <div class="card-body">
+        <img class="plant-photo" src="{{ card.plant_id.plant_photo.url }}" alt="Plant Photo" >
+       
+        <div class="attribute">
+            <span>Description:</span> {{ card.plant_id.description }}
+        </div>
+       
+    </div>
+</div>
+
+

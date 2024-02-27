@@ -60,5 +60,6 @@ class UsersCard(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE)
 
+
     def __str__(self):
         return self.card_id.plant_id.name

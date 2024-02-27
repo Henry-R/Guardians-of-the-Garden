@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 
 from sustainability.forms import PlantOfTheDayForm
-from sustainability.models import PlantOfTheDay, Plant, Card
+from sustainability.models import PlantOfTheDay, Plant, Card, UsersCard
 from django.contrib.auth.models import User
 from sustainability.forms import ImageUploadForm
 from sustainability.models import PlantOfTheDay
@@ -55,7 +55,17 @@ def leaderboard_view(request):
 @login_required()
 def users_cards_view(request):
     cards = Card.objects.all()
-    return render(request, 'sustainability/cards.html', context={'cards': cards})
+
+    current_user = request.user
+
+    user_cards = UsersCard.objects.filter(user_id=current_user)
+    user_owned_cards = [uc.card_id for uc in user_cards]
+
+    context = {
+        'cards': cards,
+        'user_owned_cards': user_owned_cards,
+    }
+    return render(request, 'sustainability/cards.html', context=context)
 
 @login_required()
 def user_account_view(request):
