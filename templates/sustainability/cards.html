@@ -7,9 +7,12 @@
 
 
 {% block content %}
-{%  for Card in cards %} 
-    {% if user.  %}
-    {% include 'sustainability/plant_card_disabled.html' with card=Card %}
-    
-{% endfor %}
+
+    {% for card in cards %}
+        {% if card not in user_owned_cards %}
+            {% include 'sustainability/plant_card_disabled.html' with card=card %}
+        {% else %}
+            {% include 'sustainability/plant_card.html' with card=card %}
+        {% endif %}
+    {% endfor %}
 {% endblock %}
