@@ -72,29 +72,12 @@ def user_account_view(request):
     user = get_user(request)
     return render(request, 'sustainability/account.html', context={'user':user})
 
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-import requests
-
-from .forms import ImageUploadForm
-from .models import PlantOfTheDay
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.utils import timezone
-import requests
-
-from .forms import ImageUploadForm
-from .models import PlantOfTheDay, UsersCard
-
-@login_required
+@login_required  
 def identify_plant_view(request):
-    if request.method == 'POST':
-        form = ImageUploadForm(request.POST, request.FILES)
-        if form.is_valid():
+    if request.method == 'POST':  # Checks if the request is a POST request
+        form = ImageUploadForm(request.POST, request.FILES)  # Initializes the form with POST data and files
+        if form.is_valid():  # Validates the form
+            # Prepares the request to the PlantNet API
             api_url = 'https://my-api.plantnet.org/v2/identify/all'
             params = {
                 "include-related-images": "false",
@@ -102,28 +85,34 @@ def identify_plant_view(request):
                 "lang": "en",
                 "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
             }
-            image_file = request.FILES['image']
+            image_file = request.FILES['image']  # Retrieves the uploaded image from the form
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
 
+            # Sends the request to the PlantNet API
             response = requests.post(api_url, params=params, files=files)
 
-            if response.status_code == 200:
-                data = response.json()
+            if response.status_code == 200:  # Checks if the API request was successful
+                data = response.json()  # Parses the JSON response from the API
 
+                # Extracts relevant data from the response
                 best_match = data.get('bestMatch')
                 results = data.get('results', [])
                 first_result = results[0] if results else None
 
                 try:
-                    today = timezone.now().date()
+                    today = timezone.now().date()  # Gets today's date
+                    # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
+                    # Gets the name of the plant of the day, converting it to lowercase for comparison
                     plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()
 
+                    # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
 
+                    # Constructs the match message based on whether a match was found
                     if is_match:
-                        # Attempts to assign the matched card to the user
+                        # Assigns the matched card to the user, creating a new UsersCard object if necessary
                         user_card, created = UsersCard.objects.get_or_create(
                             user_id=request.user,
                             card_id=plant_of_the_day_card
@@ -137,6 +126,7 @@ def identify_plant_view(request):
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "No Plant of the Day set for today."
 
+                # Renders the result template with the collected information
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
@@ -144,10 +134,8 @@ def identify_plant_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
+                # Returns an error response if the API request failed
                 return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
-    else:
+    else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
     return render(request, 'sustainability/identify_plant_form.html', {'form': form})
-
-
-
