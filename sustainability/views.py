@@ -81,6 +81,15 @@ import requests
 from .forms import ImageUploadForm
 from .models import PlantOfTheDay
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.utils import timezone
+import requests
+
+from .forms import ImageUploadForm
+from .models import PlantOfTheDay, UsersCard
+
 @login_required
 def identify_plant_view(request):
     if request.method == 'POST':
@@ -108,12 +117,23 @@ def identify_plant_view(request):
                 try:
                     today = timezone.now().date()
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
-                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()  
+                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()
 
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-                    match_message = "Congratulations! Your plant is related to the Plant of the Day!" if is_match else "Your plant is not the Plant of the Day."
 
+                    if is_match:
+                        # Attempts to assign the matched card to the user
+                        user_card, created = UsersCard.objects.get_or_create(
+                            user_id=request.user,
+                            card_id=plant_of_the_day_card
+                        )
+                        if created:
+                            match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
+                        else:
+                            match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
+                    else:
+                        match_message = "Your plant is not the Plant of the Day."
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "No Plant of the Day set for today."
 
@@ -121,12 +141,13 @@ def identify_plant_view(request):
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
-                    'current_plant': plant_of_the_day_card, 
+                    'current_plant': plant_of_the_day_card,
                 })
             else:
                 return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
     else:
         form = ImageUploadForm()
     return render(request, 'sustainability/identify_plant_form.html', {'form': form})
+
 
 
