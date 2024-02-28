@@ -72,6 +72,15 @@ def user_account_view(request):
     user = get_user(request)
     return render(request, 'sustainability/account.html', context={'user':user})
 
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+import requests
+
+from .forms import ImageUploadForm
+from .models import PlantOfTheDay
+
 @login_required
 def identify_plant_view(request):
     if request.method == 'POST':
@@ -94,15 +103,30 @@ def identify_plant_view(request):
 
                 best_match = data.get('bestMatch')
                 results = data.get('results', [])
-
                 first_result = results[0] if results else None
+
+                try:
+                    today = timezone.now().date()
+                    plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
+                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()  
+
+                    common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
+                    is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
+                    match_message = "Congratulations! Your plant is related to the Plant of the Day!" if is_match else "Your plant is not the Plant of the Day."
+
+                except PlantOfTheDay.DoesNotExist:
+                    match_message = "No Plant of the Day set for today."
 
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card, 
                 })
             else:
                 return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
     else:
         form = ImageUploadForm()
     return render(request, 'sustainability/identify_plant_form.html', {'form': form})
+
+

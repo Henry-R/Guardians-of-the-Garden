@@ -13,7 +13,19 @@
       <p><strong>Family:</strong> {{ result.species.family.scientificName }}</p>
       <p><strong>Score:</strong> {{ result.score }}</p>
     </div>
+    {% if match_message %}
+      <div>
+        <p><strong>Match Message:</strong> {{ match_message }}</p>
+      </div>
+    {% endif %}
   {% else %}
     <p>No results found.</p>
+  {% endif %}
+
+  {% if current_plant %}
+    <div style="margin-top: 20px;">
+      <h3>Current Plant of the Day:</h3>
+      {% include 'sustainability/plant_card.html' with card=current_plant %}
+    </div>
   {% endif %}
 {% endblock %}
