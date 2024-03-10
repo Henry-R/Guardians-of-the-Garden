@@ -1,3 +1,5 @@
+<!--Base template-->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -9,8 +11,10 @@
 </head>
 <body>
 <header>
+ <!--Top navbar-->
     <nav class="navbar">
         <ul >
+        <!--Navbar shows links to all the relevant pages if the user is logged in-->
             {% if user.is_authenticated %}
                 <li>
                     <form class="logout" action="{% url 'logout' %}" method="post">
@@ -21,13 +25,14 @@
                     <a href="{% url 'home' %}">Home</a>
                     <a href="{% url 'user' %}">User</a>
                     <a href="{% url 'leaderboard' %}">Leaderboard</a>
+                 <!--Show edit plant of the day if the user is a game master-->
                  {% if perms.sustainability.ADD_PLANT_OF_THE_DAY %}
                     <a href="{% url 'plant_of_the_day_view' %}">Edit Plant of the day</a>
                         {% endif %}
                     <a href="{% url 'upload-plant-image' %}">Identify Plant</a>
                   
                 </li>
-               
+                <!--If user is not logged in the show the login button-->
             {% else %}
                 <li>
                     <a href="{% url 'login' %}">Login</a>
