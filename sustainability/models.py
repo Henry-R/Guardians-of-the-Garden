@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from saltedCoffee import settings
+from guardiansOfTheGarden import settings
 
 
 class Userprofile(AbstractUser):
