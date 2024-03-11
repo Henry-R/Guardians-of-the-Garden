@@ -1,15 +1,18 @@
- <!--Form to submit a post request to the API view-->
-
 {% extends 'sustainability/base.html' %}
 
-{% block title %}Upload Plant Image{% endblock %}
-
 {% block content %}
-  <h2>Upload an Image of a Plant</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-       <!--Plant image form-->
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
-  </form>
+<div id="option_selection">
+  <button id="choose_upload">Upload a Photo</button>
+  <button id="choose_camera">Take a Photo</button>
+</div>
+<script>
+  document.getElementById('choose_upload').addEventListener('click', function() {
+      window.location.href = "{% url 'upload_plant_image' %}";  
+  });
+  
+  document.getElementById('choose_camera').addEventListener('click', function() {
+      window.location.href = "{% url 'capture_plant_image' %}"; 
+  });
+</script>
 {% endblock %}
+

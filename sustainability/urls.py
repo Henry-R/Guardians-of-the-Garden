@@ -9,5 +9,7 @@ urlpatterns = [
     path("user/account", views.user_account_view, name="account"),
     path("leaderboard/", views.leaderboard_view, name="leaderboard"),
     path("admin/plant-of-the-day/", views.plant_of_the_day_view, name="plant_of_the_day_view"),
-    path("user/upload-plant-image/", views.identify_plant_view, name="upload-plant-image")
+    path("user/identify-plant/", views.identify_plant_view, name="identify_plant_view"),
+    path("user/identify-plant/upload-plant-image/", views.upload_plant_view, name="upload_plant_image"),
+    path("user/identify-plant/capture-plant-image/", views.capture_plant_view, name="capture_plant_image")
 ]
