@@ -1,9 +1,40 @@
-import datetime
 from django.utils import timezone
 
+from django.contrib.auth.models import User, AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.contrib.auth.models import User, Permission
+
+from saltedCoffee import settings
+
+
+class Userprofile(AbstractUser):
+    score = models.IntegerField(default=0)
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='user_profiles',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='user_profiles',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+        related_query_name='user_profile',
+    )
+
+    def __str__(self):
+        return self.username
+
+    def calculate_score(self):
+        users_cards = UsersCard.objects.filter(user_id=self)
+        for cards in users_cards:
+            self.score += cards.card_id.rarity_id.rarity_points
+
+        self.save()
+        return self.score
 
 
 class Plant(models.Model):
@@ -14,8 +45,6 @@ class Plant(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 
 class Rarity(models.Model):
@@ -40,7 +69,7 @@ class Card(models.Model):
 class PlantOfTheDay(models.Model):
     plant = models.ForeignKey(Card, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
-    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         today = timezone.now().date()
@@ -57,9 +86,8 @@ class PlantOfTheDay(models.Model):
 
 class UsersCard(models.Model):
     users_cards_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE)
-
 
     def __str__(self):
         return self.card_id.plant_id.name
