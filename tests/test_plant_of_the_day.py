@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.urls import reverse
 
-from sustainability.models import PlantOfTheDay, Plant, Rarity, Card
+from sustainability.models import PlantOfTheDay, Rarity, Card, Userprofile, Pack
 from sustainability.permissions import ADD_PLANT_OF_THE_DAY
 
 
@@ -16,11 +16,11 @@ class TestPlantOfTheDay(TestCase):
             name='Can add plant of the day',
             content_type=content_type
         )
-        self.user_admin = User.objects.create_user(
+        self.user_admin = Userprofile.objects.create_user(
             username='test_user_admin',
             email='test_email_admin',
             password='test_password_admin')
-        self.user_non_admin = User.objects.create_user(
+        self.user_non_admin = Userprofile.objects.create_user(
             username='test_user_non_admin',
             email='test_email_non_admin',
             password='test_password_non_admin')
@@ -30,16 +30,19 @@ class TestPlantOfTheDay(TestCase):
             rarity_colour='red',
             rarity_points=5
             )
-        self.plant = Plant.objects.create(
-            name='test_plant',
-            plant_id=1,
-            description='test_plant_description')
+        self.pack = Pack.objects.create(
+            pack_id=1,
+            pack_name='test_pack'
+        )
         self.card = Card.objects.create(
-            plant_id=self.plant,
-            rarity_id=self.rarity
+            card_id=1,
+            rarity_id=self.rarity,
+            name='test_plant',
+            description='test_plant_description',
+            pack_id=self.pack
         )
         self.user_admin.user_permissions.add(self.plant_of_the_day_permission)
-        self.user_admin = get_object_or_404(User, pk=self.user_admin.pk)
+        self.user_admin = get_object_or_404(Userprofile, pk=self.user_admin.pk)
 
     def test_add_game_master(self):
         self.client.login(username='test_user_admin', password='test_password_admin')
