@@ -80,7 +80,7 @@ class PlantOfTheDay(models.Model):
             super(PlantOfTheDay, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.plant.plant_id.name
+        return self.plant.name
 
 
 class UsersCard(models.Model):
