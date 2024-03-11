@@ -1,0 +1,13 @@
+{% extends 'sustainability/base.html' %}
+
+{% block title %}Upload Plant Image{% endblock %}
+
+{% block content %}
+  <h2>Upload an Image of a Plant</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+       <!--Plant image form-->
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}

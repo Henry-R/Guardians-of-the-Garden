@@ -1,0 +1,83 @@
+{% extends 'sustainability/base.html' %}
+
+{% block title %}Capture Plant Image{% endblock %}
+
+{% block content %}
+<div id="camera_interface">
+    <button id="enable_camera">Enable Camera</button>
+    <div class="camera" style="display:none;">
+      <video id="video" width="320" height="240" autoplay></video>
+      <button id="capture">Capture Photo</button>
+      <button id="retake" style="display:none;">Retake</button>
+    </div>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <form method="post" enctype="multipart/form-data" style="display:none;" id="camera_form">
+      {% csrf_token %}
+      <input type="hidden" name="image_data" id="imageData">
+      <button type="submit" id="submit_button" style="display:none;">Submit</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('enable_camera').addEventListener('click', function() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+          document.querySelector('.camera').style.display = 'block';
+          var video = document.getElementById('video');
+          video.srcObject = stream;
+          video.play();
+          this.style.display = 'none'; 
+      })
+      .catch(function(err) {
+          console.error('Error accessing the camera: ', err);
+      });
+  });
+
+});
+
+  document.getElementById('enable_camera').addEventListener('click', function() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+          document.querySelector('.camera').style.display = 'block';
+          var video = document.getElementById('video');
+          video.srcObject = stream;
+          video.play();
+
+           var enableCameraButton = document.getElementById('enable_camera');
+           if (enableCameraButton) {
+               enableCameraButton.remove();
+           }
+      })
+      .catch(function(err) {
+          console.error('Error accessing the camera: ', err);
+      });
+  });
+  
+  document.getElementById('capture').addEventListener('click', function() {
+    var canvas = document.getElementById('canvas');
+    var video = document.getElementById('video');
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.style.display = 'block';
+    document.getElementById('video').style.display = 'none';
+    this.style.display = 'none';
+    document.getElementById('retake').style.display = 'inline';
+    
+    document.getElementById('camera_form').style.display = 'block';
+    document.getElementById('submit_button').style.display = 'inline'; 
+  
+    var dataURL = canvas.toDataURL('image/jpeg');
+    document.getElementById('imageData').value = dataURL;
+  });
+  
+  
+  document.getElementById('retake').addEventListener('click', function() {
+      document.getElementById('canvas').style.display = 'none'; 
+      document.getElementById('video').style.display = 'block'; 
+      document.getElementById('capture').style.display = 'inline'; 
+      this.style.display = 'none'; 
+      document.getElementById('submit_button').style.display = 'none'; 
+  });
+  </script>
+  {% endblock %}
