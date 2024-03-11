@@ -2,9 +2,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import get_user
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.contrib.auth.decorators import permission_required
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -12,64 +10,72 @@ from django.contrib.auth.decorators import login_required
 import requests
 
 from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm
-from sustainability.models import PlantOfTheDay, Plant, Card, UsersCard
-from django.contrib.auth.models import User
+from sustainability.models import Card, UsersCard
+
 from sustainability.forms import ImageUploadForm
 from sustainability.models import PlantOfTheDay
-from sustainability.permissions import ADD_PLANT_OF_THE_DAY
-#Index view
+
+
+# Index view
 @login_required()
 def home(request):
     try:
-        #Get the current plant of the day from the database
+        # Get the current plant of the day from the database
         current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
     except PlantOfTheDay.DoesNotExist:
         current_plant = None
-        #Render the index page
+        # Render the index page
     return render(request, 'sustainability/index.html', {'current_plant': current_plant})
 
-#View to edit the plant of the day - only for gamemasters with the permission
+
+# View to edit the plant of the day - only for gamemasters with the permission
 @login_required()
 @permission_required('sustainability.add_plant_of_the_day', raise_exception=True)
 def plant_of_the_day_view(request):
-    #Get html form post request from the edit plant of the day page.
+    # Get html form post request from the edit plant of the day page.
     if request.method == 'POST':
         form = PlantOfTheDayForm(request.POST)
         if form.is_valid():
-            #Retreive the plant of the day option and save it at today's date
+            # Retreive the plant of the day option and save it at today's date
             plant_of_the_day = form.save(commit=False)
             plant_of_the_day.added_by = request.user
             plant_of_the_day.save()
-            #Redirect back to the index
+            # Redirect back to the index
             return redirect('home')
-        #If form is not valid, re-render the page
+        # If form is not valid, re-render the page
         return redirect('plant_of_the_day_view')
     else:
-        #Handles the GET request, renders a form to submit the plant of the day option
+        # Handles the GET request, renders a form to submit the plant of the day option
         form = PlantOfTheDayForm()
         try:
             current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
         except PlantOfTheDay.DoesNotExist:
             current_plant = "Not selected"
     return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant})
-#Account view shows the options the user has available such as viewing cards and taking a photo
+
+
+# Account view shows the options the user has available such as viewing cards and taking a photo
 @login_required()
 def account_view(request):
     return render(request, 'sustainability/user.html')
-#Leaderboard view shows leaderboard comparing scores of all players
+
+
+# Leaderboard view shows leaderboard comparing scores of all players
 @login_required()
 def leaderboard_view(request):
     return render(request, 'sustainability/leaderboard.html')
-#User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
+
+
+# User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
 def users_cards_view(request):
-    #Get a list of all the cards in the game
+    # Get a list of all the cards in the game
     cards = Card.objects.all()
-    #Retrieve the logged in user
+    # Retrieve the logged in user
     current_user = request.user
-    #Get a list of all the usercards the user owns
+    # Get a list of all the usercards the user owns
     user_cards = UsersCard.objects.filter(user_id=current_user)
-    #Gets all the cards associated with a usercard belonging to the player
+    # Gets all the cards associated with a usercard belonging to the player
     user_owned_cards = [uc.card_id for uc in user_cards]
 
     context = {
@@ -77,13 +83,17 @@ def users_cards_view(request):
         'user_owned_cards': user_owned_cards,
     }
     return render(request, 'sustainability/cards.html', context=context)
-#User account view shows details about the user
+
+
+# User account view shows details about the user
 @login_required()
 def user_account_view(request):
-    #Retrieve the currently logged in user
+    # Retrieve the currently logged in user
     user = get_user(request)
-    return render(request, 'sustainability/account.html', context={'user':user})
+    return render(request, 'sustainability/account.html', context={'user': user})
 
+
+@login_required
 def identify_plant_view(request):
     return render(request, 'sustainability/identify_plant_form.html')
 
@@ -124,7 +134,7 @@ def upload_plant_view(request):
                     # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
                     # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()
+                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
 
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
@@ -200,7 +210,7 @@ def capture_plant_view(request):
                     # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
                     # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()
+                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
 
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []

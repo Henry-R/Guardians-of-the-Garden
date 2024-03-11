@@ -1,12 +1,12 @@
 
 from django.shortcuts import reverse
-from django.contrib.auth.models import User
 from django.test import TestCase
 
+from sustainability.models import Userprofile
 
 class TestLogin(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='test_user', email='test_email', password='test_password')
+        self.user = Userprofile.objects.create_user(username='test_user', email='test_email', password='test_password')
 
     def test_login(self):
         response = self.client.post(reverse('login'), {'username': 'test_user', 'password': 'test_password'})
