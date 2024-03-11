@@ -5,7 +5,7 @@
 {% block content %}
     {% load static %}
 <body>
- <h3>Current Plant of the Day: {{ current_plant.plant_id }}</h3>
+ <h3>Current Plant of the Day: {{ current_plant.name }}</h3>
   <!--Show the card that corresponds with the current plant of the day-->
  {% include 'sustainability/plant_card.html' with card=current_plant %}
 </body>

@@ -122,7 +122,7 @@ def identify_plant_view(request):
                     # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
                     # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.plant_id.name.lower()
+                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
 
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []

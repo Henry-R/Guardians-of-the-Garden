@@ -9,6 +9,7 @@ from saltedCoffee import settings
 
 class Userprofile(AbstractUser):
     score = models.IntegerField(default=0)
+    bonus_score = models.IntegerField(default=0)
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='user_profiles',
@@ -36,17 +37,6 @@ class Userprofile(AbstractUser):
         self.save()
         return self.score
 
-
-class Plant(models.Model):
-    plant_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-    description = models.TextField()
-    plant_photo = models.ImageField(default='images/plant_default.jpg', upload_to='static/images')
-
-    def __str__(self):
-        return self.name
-
-
 class Rarity(models.Model):
     rarity_id = models.AutoField(primary_key=True)
     rarity_desc = models.CharField(max_length=10)
@@ -55,15 +45,24 @@ class Rarity(models.Model):
 
     def __str__(self):
         return self.rarity_desc
+    
+class Pack(models.Model):
+    pack_id = models.AutoField(primary_key=True)
+    pack_name = models.CharField(max_length=30, default="")
 
+    def __str__(self):
+        return self.pack_name
 
 class Card(models.Model):
     card_id = models.AutoField(primary_key=True)
-    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, default="")
+    description = models.TextField(default="")
+    plant_photo = models.ImageField(default='images/plant_default.jpg', upload_to='static/images')
     rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
+    pack_id = models.ForeignKey(Pack, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.plant_id.name
+        return self.name
 
 
 class PlantOfTheDay(models.Model):
@@ -90,4 +89,19 @@ class UsersCard(models.Model):
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.card_id.plant_id.name
+        return self.card_id.name
+    
+class Leaderboard(models.Model):
+    leaderboard_id = models.AutoField(primary_key=True)
+    leaderboard_name = models.CharField(max_length=30, default="")
+
+    def __str__(self):
+        return self.leaderboard_name
+    
+class LeaderboardMember(models.Model):
+    leaderboard_id = models.ForeignKey(Leaderboard, on_delete=models.CASCADE)
+    member_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.member_id.username
+    
