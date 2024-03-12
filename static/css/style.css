@@ -32,7 +32,6 @@ body {
 .main {
     min-height: 100vh;
     width: 100%;
-    overflow: hidden;
     transition: all 0.35s ease-in-out;
     background-color: #fafbfe;
 }
@@ -45,6 +44,7 @@ body {
     background-color: #8aba75;
     display: flex;
     flex-direction: column;
+    height: 100vh; 
 }
 
 #sidebar.expand {
@@ -66,12 +66,14 @@ body {
 
 .sidebar-logo {
     margin: auto 0;
+ 
 }
 
 .sidebar-logo a {
     color: #FFF;
     font-size: 1.15rem;
     font-weight: 600;
+
 }
 
 #sidebar:not(.expand) .sidebar-logo,
@@ -100,11 +102,17 @@ a.sidebar-link {
 
 a.sidebar-link:hover {
     background-color: rgba(255, 255, 255, .075);
-    border-left: 3px solid #6ca553;
+    border-left: 3px solid #376a21;
 }
 
 .sidebar-item {
     position: relative;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 /*old index*/
@@ -198,7 +206,3 @@ a.sidebar-link:hover {
     object-fit: cover;
     margin-bottom: 10px;
 }
-
-
-
-
