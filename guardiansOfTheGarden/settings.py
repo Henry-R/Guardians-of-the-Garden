@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'guardiansOfTheGarden.wsgi.application'
+WSGI_APPLICATION = 'guardiansOfTheGarden.wsgi.app'
 
 
 # Database
