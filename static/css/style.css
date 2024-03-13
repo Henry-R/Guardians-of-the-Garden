@@ -61,7 +61,7 @@ body {
 
 .toggle-btn i {
     font-size: 1.5rem;
-    color: #FFF;
+    color: #000000;
 }
 
 .sidebar-logo {
@@ -70,7 +70,7 @@ body {
 }
 
 .sidebar-logo a {
-    color: #FFF;
+    color: #010101;
     font-size: 1.15rem;
     font-weight: 600;
 
@@ -88,7 +88,7 @@ body {
 
 a.sidebar-link {
     padding: .625rem 1.625rem;
-    color: #FFF;
+    color: #000000;
     display: block;
     font-size: 0.9rem;
     white-space: nowrap;
