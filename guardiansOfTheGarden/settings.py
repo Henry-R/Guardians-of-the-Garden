@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-ccgn5i1tj%7xteh%li=j0y_o82858k5smxmx#z188l2ido9f5z
 # CSRF_COOKIE_SECURE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+DEBUG = True
 
 # Vercel as the deployment host, and localhost for testing
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost','127.0.0.1']
@@ -122,9 +122,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = []
 LOGIN_URL = '/registration/login'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
