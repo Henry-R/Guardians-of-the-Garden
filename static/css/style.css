@@ -37,11 +37,11 @@ body {
 }
 
 #sidebar {
-    width: 70px;
-    min-width: 70px;
+    width: 100px;
+    min-width: 100px;
     z-index: 1000;
     transition: all .25s ease-in-out;
-    background-color: #8aba75;
+    background-color: #EFFCD7;
     display: flex;
     flex-direction: column;
     height: 100vh; 
@@ -66,7 +66,7 @@ body {
 
 .sidebar-logo {
     margin: auto 0;
- 
+    
 }
 
 .sidebar-logo a {
@@ -101,48 +101,20 @@ a.sidebar-link {
 }
 
 a.sidebar-link:hover {
-    background-color: rgba(255, 255, 255, .075);
+    background-color: #C7DF98;
     border-left: 3px solid #376a21;
 }
 
 .sidebar-item {
     position: relative;
+    width: 100%;
+
 }
 
 .sidebar-footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-}
-
-/*old index*/
-.navbar {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #c7df98;
-    min-height: 50px;
-}
-
-.navbar ul li {
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.navbar li a {
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-.navbar li a:hover {
-    background-color: #6ea156; 
-}
-
-.logout {
-    float: right;
 }
 
 
@@ -159,7 +131,7 @@ a.sidebar-link:hover {
   }
 
 
-  /*plant_card.html*/
+/*plant_card.html*/
 .card{
     width: 300px;
     height: 400px;
