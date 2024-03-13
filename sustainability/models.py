@@ -69,7 +69,7 @@ class Card(models.Model):
 
 class PlantOfTheDay(models.Model):
     plant = models.ForeignKey(Card, on_delete=models.CASCADE)
-    date = models.DateField(default=date.today(), blank=True)
+    date = models.DateField(auto_now=True)
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
