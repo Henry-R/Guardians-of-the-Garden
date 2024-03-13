@@ -20,7 +20,7 @@ class JoinLeaderboardForm(forms.Form):
 
 class LeaderboardForm(forms.Form):
     leaderboard_name = forms.CharField(label='Leaderboard Name', max_length=100)
-    is_public = forms.BooleanField(label='Public')
+    is_public = forms.BooleanField(label='Public',required=False)
 
 class ImageCaptureForm(forms.Form):
     image_data = forms.CharField(widget=forms.HiddenInput())
