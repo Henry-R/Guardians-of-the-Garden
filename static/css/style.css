@@ -113,7 +113,6 @@ a.sidebar-link:hover {
 .sidebar-footer {
     position: fixed;
     display: inline-block;
-    margin-left: inherit;
     bottom: 0;
 }
 
