@@ -5,7 +5,11 @@ admin.site.register(Userprofile)
 admin.site.register(Rarity)
 admin.site.register(Pack)
 admin.site.register(Card)
-admin.site.register(PlantOfTheDay)
+
+class potdAdmin(admin.ModelAdmin):
+    readonly_fields = ("date",)
+
+admin.site.register(PlantOfTheDay, potdAdmin)
 admin.site.register(UsersCard)
 admin.site.register(Leaderboard)
 admin.site.register(LeaderboardMember)
