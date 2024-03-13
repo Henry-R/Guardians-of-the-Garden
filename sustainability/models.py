@@ -1,3 +1,5 @@
+import random
+
 from django.utils import timezone
 
 from django.contrib.auth.models import User, AbstractUser, Permission
@@ -33,11 +35,13 @@ class Userprofile(AbstractUser):
 
     def calculate_score(self):
         users_cards = UsersCard.objects.filter(user_id=self)
+        self.score = 0
         for cards in users_cards:
             self.score += cards.card_id.rarity_id.rarity_points
-
+        self.score += self.bonus_score
         self.save()
         return self.score
+
 
 class Rarity(models.Model):
     rarity_id = models.AutoField(primary_key=True)
@@ -47,13 +51,15 @@ class Rarity(models.Model):
 
     def __str__(self):
         return self.rarity_desc
-    
+
+
 class Pack(models.Model):
     pack_id = models.AutoField(primary_key=True)
     pack_name = models.CharField(max_length=30, default="")
 
     def __str__(self):
         return self.pack_name
+
 
 class Card(models.Model):
     card_id = models.AutoField(primary_key=True)
@@ -69,7 +75,7 @@ class Card(models.Model):
 
 class PlantOfTheDay(models.Model):
     plant = models.ForeignKey(Card, on_delete=models.CASCADE)
-    date = models.DateField(auto_now=True) #default=date.today(), blank=True
+    date = models.DateField(auto_now=True)  # default=date.today(), blank=True
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -92,18 +98,34 @@ class UsersCard(models.Model):
 
     def __str__(self):
         return self.card_id.name
-    
+
+
+import random
+import string
+
+
+def generate_leaderboard_code():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+
 class Leaderboard(models.Model):
     leaderboard_id = models.AutoField(primary_key=True)
     leaderboard_name = models.CharField(max_length=30, default="")
+    leaderboard_code = models.CharField(
+        max_length=6,
+        unique=True,
+        editable=False,
+        default=generate_leaderboard_code
+    )
+    is_public = models.BooleanField(default=False)
 
     def __str__(self):
         return self.leaderboard_name
-    
+
+
 class LeaderboardMember(models.Model):
     leaderboard_id = models.ForeignKey(Leaderboard, on_delete=models.CASCADE)
     member_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.member_id.username
-    
