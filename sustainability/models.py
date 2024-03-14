@@ -6,8 +6,6 @@ from django.db import models
 
 from guardiansOfTheGarden import settings
 
-from datetime import date
-
 
 class Userprofile(AbstractUser):
     score = models.IntegerField(default=0)
