@@ -23,7 +23,7 @@ h1 {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-image: url(../images/background.png);
+    background-image: url(../images/background-2.jpg);
     background-size: cover;
     background-color: #cccccc;
 }
@@ -36,7 +36,6 @@ body {
     min-height: 100vh;
     width: 100%;
     transition: all 0.35s ease-in-out;
-    background-color: #fafbfe;
 }
 
 #sidebar {
