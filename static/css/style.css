@@ -25,7 +25,9 @@ body {
     font-family: 'Poppins', sans-serif;
     background-image: url(../images/background-2.jpg);
     background-size: cover;
-    background-color: #cccccc;
+    background-color: rgba(0, 0, 0, 0.01);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .wrapper {
@@ -47,7 +49,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    position: sticky 
+    position: sticky;
+    top: 0px;
 }
 
 #sidebar.expand {
