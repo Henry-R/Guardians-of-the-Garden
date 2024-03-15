@@ -8,13 +8,16 @@
 
 {% block content %}
 
-<div class="details">
-    Username: {{user.username}}
-    <br>
-    Email: {{user.email}}
-    <br>
-    Score: {{ user.calculate_score }}
+<div class="container">
+    <div class="details">
+        Username: {{user.username}}
+        <br>
+        Email: {{user.email}}
+        <br>
+        Score: {{ user.calculate_score }}
+    </div>
 </div>
+
 <div class="container">
     <a href="change_details">Change Details</a>
 </div>

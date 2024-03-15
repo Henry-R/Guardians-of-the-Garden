@@ -260,5 +260,5 @@ def change_details(request):
             return redirect('account_view')
     else:
         form = ChangeDetailsForm(instance=request.user)
-    return render(request, 'change_details.html', {'form': form})
+    return render(request, 'sustainability/change_details.html', {'form': form})
 
