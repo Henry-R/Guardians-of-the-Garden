@@ -95,5 +95,5 @@ fabric.properties
 
 __pycache__/
 
-# virtual environments
+#virtual envs
 env/
