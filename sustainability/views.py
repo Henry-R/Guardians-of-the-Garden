@@ -1,16 +1,19 @@
 import base64
+
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import get_user
 from django.contrib.auth.decorators import permission_required
 from django.utils import timezone
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import requests
+from rest_framework.reverse import reverse
 
-from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, ChangeDetailsForm
-from sustainability.models import Card, UsersCard, Userprofile
+from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, LeaderboardForm, JoinLeaderboardForm, ChangeDetailsForm
+from sustainability.models import Card, UsersCard, Userprofile, Leaderboard, LeaderboardMember
 
 from sustainability.forms import ImageUploadForm
 from sustainability.models import PlantOfTheDay
@@ -62,9 +65,70 @@ def account_view(request):
 
 # Leaderboard view shows leaderboard comparing scores of all players
 @login_required()
-def leaderboard_view(request):
-    return render(request, 'sustainability/leaderboard.html')
+def leaderboard_view(request, leaderboard_id):
+    user = get_user(request)
+    try:
+      leaderboard = Leaderboard.objects.get(leaderboard_id=leaderboard_id)
 
+    except Leaderboard.DoesNotExist:
+        return redirect('leaderboard')
+    if not LeaderboardMember.objects.filter(member_id=user, leaderboard_id=leaderboard_id).exists() and not leaderboard.is_public :
+        return redirect('leaderboard')
+
+    member_ids = LeaderboardMember.objects.filter(leaderboard_id=leaderboard_id).values_list('member_id', flat=True)
+    # Fetch user profiles of members in the leaderboard, ordered by score
+    leader_user_profiles = Userprofile.objects.filter(id__in=member_ids)
+    user_profiles = leader_user_profiles.order_by('-score')
+    user_in_leaderboard = leader_user_profiles.filter(id=request.user.id).exists()
+
+    invite_link = request.build_absolute_uri(reverse('join_leaderboard') + f'?leaderboard_code={leaderboard.leaderboard_code}')
+    # Pass the user profiles to the template
+    return render(request, 'sustainability/leaderboard.html', {'user_profiles': user_profiles, 'leaderboard': leaderboard, 'invite_link': invite_link, 'user_in_leaderboard':user_in_leaderboard})
+
+
+@login_required()
+def leaderboard_list_view(request):
+    leaderboards = LeaderboardMember.objects.filter(member_id=request.user).values_list('leaderboard_id', flat=True)
+    leaderboard_list = Leaderboard.objects.filter(leaderboard_id__in=leaderboards)
+    public_list = Leaderboard.objects.filter(is_public=True)
+
+    return render(request, 'sustainability/leaderboard_list.html',
+                  {'leaderboard_list': leaderboard_list, 'public_list': public_list})
+
+@login_required()
+def create_leaderboard_view(request):
+    if request.method == 'POST':
+        form = LeaderboardForm(request.POST)
+        if form.is_valid():
+            leaderboard_name = form.cleaned_data['leaderboard_name']
+            is_public = form.cleaned_data['is_public']
+            leaderboard = Leaderboard.objects.create(leaderboard_name=leaderboard_name, is_public=is_public)
+            LeaderboardMember.objects.create(leaderboard_id=leaderboard, member_id=request.user)
+            return redirect('leaderboard')
+    else:
+        form = LeaderboardForm()
+    return render(request, 'sustainability/create_leaderboard.html', {'form': form})
+
+@login_required()
+def join_leaderboard(request):
+    leaderboard_code = request.GET.get('leaderboard_code')
+    initial_data = {'leaderboard_code': leaderboard_code} if leaderboard_code else None
+
+    if request.method == 'POST':
+        form = JoinLeaderboardForm(request.POST)
+        if form.is_valid():
+            leaderboard_code = form.cleaned_data['leaderboard_code']
+            try:
+                leaderboard = Leaderboard.objects.get(leaderboard_code=leaderboard_code)
+            except Leaderboard.DoesNotExist:
+                error_message = "Wrong code. Please enter a valid leaderboard code."
+                form.add_error('leaderboard_code', error_message)
+                return render(request, 'sustainability/join_leaderboard.html', {'form': form})
+            LeaderboardMember.objects.create(leaderboard_id=leaderboard, member_id=request.user)
+            return redirect('leaderboard_detail', leaderboard_id=leaderboard.leaderboard_id)
+    else:
+        form = JoinLeaderboardForm(initial=initial_data)
+    return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data})
 
 # User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
@@ -97,7 +161,8 @@ def user_account_view(request):
 def identify_plant_view(request):
     return render(request, 'sustainability/identify_plant_form.html')
 
-@login_required  
+
+@login_required
 def upload_plant_view(request):
     # Initialize variables to ensure they are accessible throughout the function
     plant_of_the_day_card = None
@@ -139,19 +204,29 @@ def upload_plant_view(request):
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-
-                    # Constructs the match message based on whether a match was found
-                    if is_match:
-                        # Assigns the matched card to the user, creating a new UsersCard object if necessary
+                    matching_card = Card.get_card_by_common_name(common_names)
+                    created = False
+                    # Assigns the matched card to the user, creating a new UsersCard object if necessary
+                    if matching_card is not None:
                         user_card, created = UsersCard.objects.get_or_create(
                             user_id=request.user,
-                            card_id=plant_of_the_day_card
+                            card_id=matching_card
                         )
+
+                    user_profile = Userprofile.objects.get(id=request.user.id)
+                    # Constructs the match message based on whether a match was found
+                    if is_match:
                         if created:
+                            if user_profile.user_owns_all_cards_in_pack(user_card.card_id):
+                                user_profile.pack_bonus()
+                            user_profile.potd_bonus()
                             match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
                         else:
                             match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
                     else:
+                        if created:
+                            if user_profile.user_owns_all_cards_in_pack(user_card.card_id):
+                                user_profile.pack_bonus()
                         match_message = "Your plant is not the Plant of the Day."
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "No Plant of the Day set for today."
@@ -170,7 +245,8 @@ def upload_plant_view(request):
         form = ImageUploadForm()
     return render(request, 'sustainability/upload_form.html', {'form': form})
 
-@login_required  
+
+@login_required
 def capture_plant_view(request):
     # Initialize variables to ensure they are accessible throughout the function
     plant_of_the_day_card = None
@@ -181,7 +257,8 @@ def capture_plant_view(request):
         form = ImageCaptureForm(request.POST)
         if form.is_valid():
             image_data = form.cleaned_data['image_data']
-            format, imgstr = image_data.split(';base64,')  # Assumes image_data is in the format: "data:image/png;base64,iVBORw0KGgo..."
+            format, imgstr = image_data.split(
+                ';base64,')  # Assumes image_data is in the format: "data:image/png;base64,iVBORw0KGgo..."
             ext = format.split('/')[-1]  # Determines the extension (png, jpg, etc.)
             image_file = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
             # Prepares the request to the PlantNet API
@@ -246,8 +323,18 @@ def capture_plant_view(request):
         form = ImageCaptureForm()
     return render(request, 'sustainability/capture_form.html', {'form': form})
 
+@login_required()
+def leave_leaderboard(request, leaderboard_id):
+
+    if request.user.is_authenticated:
+            leaderboard = get_object_or_404(Leaderboard, leaderboard_id=leaderboard_id)
+            if LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).exists():
+                # Remove the user from the leaderboard members
+                LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).delete()
+            return redirect('leaderboard')  # Redirect to the home page or any other appropriate URL after leaving the leaderboard
+    return None
 #view to allow users to change their details
-@login_required 
+@login_required
 def change_details(request):
     if request.method == 'POST':
         form = ChangeDetailsForm(request.POST)
@@ -261,4 +348,3 @@ def change_details(request):
     else:
         form = ChangeDetailsForm(instance=request.user)
     return render(request, 'sustainability/change_details.html', {'form': form})
-
