@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 from rest_framework.reverse import reverse
 
-from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, LeaderboardForm, JoinLeaderboardForm
+from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, LeaderboardForm, JoinLeaderboardForm, ChangeDetailsForm
 from sustainability.models import Card, UsersCard, Userprofile, Leaderboard, LeaderboardMember
 
 from sustainability.forms import ImageUploadForm
@@ -329,3 +329,18 @@ def leave_leaderboard(request, leaderboard_id):
                 LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).delete()
             return redirect('leaderboard')  # Redirect to the home page or any other appropriate URL after leaving the leaderboard
     return None
+#view to allow users to change their details
+@login_required
+def change_details(request):
+    if request.method == 'POST':
+        form = ChangeDetailsForm(request.POST)
+        if form.is_valid():
+            user_profile = Userprofile.objects.get(pk=request.user)
+            user_profile.username = form.cleaned_data['username']
+            user_profile.email = form.cleaned_data['email']
+            user_profile.password = form.cleaned_data['password']
+            user_profile.save()
+            return redirect('account_view')
+    else:
+        form = ChangeDetailsForm(instance=request.user)
+    return render(request, 'change_details.html', {'form': form})

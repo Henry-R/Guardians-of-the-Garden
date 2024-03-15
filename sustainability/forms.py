@@ -1,7 +1,8 @@
 from django import forms
 from sustainability.models import PlantOfTheDay
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from .models import Userprofile
 
 
 class PlantOfTheDayForm(forms.ModelForm):
@@ -25,3 +26,10 @@ class LeaderboardForm(forms.Form):
 
 class ImageCaptureForm(forms.Form):
     image_data = forms.CharField(widget=forms.HiddenInput())
+
+class ChangeDetailsForm(UserChangeForm):
+    email = forms.EmailField(max_length=150, help_text='Enter a valid email address.')
+
+    class Meta:
+        model = Userprofile
+        fields = ['username', 'email', 'password']
