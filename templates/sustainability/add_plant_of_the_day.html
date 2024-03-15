@@ -2,13 +2,17 @@
 
 {% extends 'index.html' %}
 {% block content %}
- <h2>Select Plant of the Day</h2>
- {% if current_plant %}
- <h3>Current Plant of the Day: {{ current_plant }}</h3>
- {% endif %}
+
+<div class="container">
+    <h5>Select Plant of the Day</h5>
+    {% if current_plant %}
+    <h5>Current Plant of the Day: {{ current_plant }}</h5>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Save</button>
     </form>
+</div>
+ 
 {% endblock %}

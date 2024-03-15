@@ -7,13 +7,18 @@
 {% endblock %}
 
 {% block content %}
-    {% for card in cards %}
-         <!--If the user does not own the card, show a greyed out card-->
-        {% if card not in user_owned_cards %}
-            {% include 'sustainability/plant_card_disabled.html' with card=card %}
-        {% else %}
-             <!--If the user owns the card, show a color version-->
-            {% include 'sustainability/plant_card.html' with card=card %}
-        {% endif %}
-    {% endfor %}
+<div class="container">
+    <div class="card-group">
+        {% for card in cards %}
+             <!--If the user does not own the card, show a greyed out card-->
+            {% if card not in user_owned_cards %}
+                {% include 'sustainability/plant_card_disabled.html' with card=card %}
+            {% else %}
+                 <!--If the user owns the card, show a color version-->
+                {% include 'sustainability/plant_card.html' with card=card %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+    
 {% endblock %}

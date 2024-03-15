@@ -28,7 +28,7 @@ def home(request):
     return render(request, 'sustainability/home.html', {'current_plant': current_plant})
 
 
-# View to edit the plant of the day - only for gamemasters with the permission
+# View to edit the plant of the day - only for game masters with the permission
 @login_required()
 @permission_required('sustainability.add_plant_of_the_day', raise_exception=True)
 def plant_of_the_day_view(request):
@@ -36,7 +36,7 @@ def plant_of_the_day_view(request):
     if request.method == 'POST':
         form = PlantOfTheDayForm(request.POST)
         if form.is_valid():
-            # Retreive the plant of the day option and save it at today's date
+            # Retrieve the plant of the day option and save it at today's date
             plant_of_the_day = form.save(commit=False)
             plant_of_the_day.added_by = request.user
             plant_of_the_day.save()
@@ -73,9 +73,9 @@ def users_cards_view(request):
     cards = Card.objects.all()
     # Retrieve the logged in user
     current_user = request.user
-    # Get a list of all the usercards the user owns
+    # Get a list of all the users cards 
     user_cards = UsersCard.objects.filter(user_id=current_user)
-    # Gets all the cards associated with a usercard belonging to the player
+    # Gets all the cards associated with a users card belonging to the player
     user_owned_cards = [uc.card_id for uc in user_cards]
 
     context = {

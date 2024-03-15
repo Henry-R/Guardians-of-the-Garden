@@ -7,7 +7,13 @@
 
 {% load static %}
 <div class="container">
-    <h3>Current Plant of the Day: {{ current_plant.name }}</h3>
+
+    <div class="intro">
+        <p>Welcome to Guardians of the Garden, your ultimate guide to exploring the lush biodiversity thriving on your campus! Delve into the enchanting world of flora as you embark on an exciting journey to discover, collect, and learn about the diverse plant species scattered across our campus.</p>
+        <p>Through interactive features, informative resources, and engaging community initiatives, we aim to empower individuals to become stewards of biodiversity. Let's embark on this botanical expedition together, cultivating a deeper understanding of the natural world while nurturing a greener, more sustainable future.</p>    
+    </div>
+
+    <h5>Current Plant of the Day: {{ current_plant.name }}</h>
     <!--Show the card that corresponds with the current plant of the day-->
    {% include 'sustainability/plant_card.html' with card=current_plant %}
 </div>

@@ -23,9 +23,9 @@ h1 {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-image: url(../images/background.jpg);
-    background-color: #cccccc;
+    background-image: url(../images/background.png);
     background-size: cover;
+    background-color: #cccccc;
 }
 
 .wrapper {
@@ -118,6 +118,7 @@ a.sidebar-link:hover {
     position: fixed;
     display: inline-block;
     bottom: 0;
+    width: 100%;
 }
 
 
