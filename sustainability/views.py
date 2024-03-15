@@ -9,8 +9,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import requests
 
-from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm
-from sustainability.models import Card, UsersCard
+from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, ChangeDetailsForm
+from sustainability.models import Card, UsersCard, Userprofile
 
 from sustainability.forms import ImageUploadForm
 from sustainability.models import PlantOfTheDay
@@ -245,3 +245,20 @@ def capture_plant_view(request):
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
     return render(request, 'sustainability/capture_form.html', {'form': form})
+
+#view to allow users to change their details
+@login_required 
+def change_details(request):
+    if request.method == 'POST':
+        form = ChangeDetailsForm(request.POST)
+        if form.is_valid():
+            user_profile = Userprofile.objects.get(pk=request.user)
+            user_profile.username = form.cleaned_data['username']
+            user_profile.email = form.cleaned_data['email']
+            user_profile.password = form.cleaned_data['password']
+            user_profile.save()
+            return redirect('account_view')
+    else:
+        form = ChangeDetailsForm(instance=request.user)
+    return render(request, 'sustainability/change_details.html', {'form': form})
+
