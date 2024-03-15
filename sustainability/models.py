@@ -30,6 +30,14 @@ class Userprofile(AbstractUser):
         related_query_name='user_profile',
     )
 
+    def potd_bonus(self):
+        if not self.pk:
+            self.bonus_score += 3
+
+    def pack_bonus(self):
+        if not self.pk:
+            self.bonus_score += 5
+
     def __str__(self):
         return self.username
 
@@ -41,6 +49,14 @@ class Userprofile(AbstractUser):
         self.score += self.bonus_score
         self.save()
         return self.score
+
+    def user_owns_all_cards_in_pack(self, userscard):
+        card = userscard.card_id
+        pack_cards = set(card.get_cards_in_pack())
+        user_cards = set(self.get_users_cards())
+        return pack_cards.issubset(user_cards)
+    def get_users_cards(self):
+        return UsersCard.objects.filter(user_id=self).values_list('card_id', flat=True)
 
 
 class Rarity(models.Model):
@@ -68,6 +84,9 @@ class Card(models.Model):
     plant_photo = models.ImageField(default='images/plant_default.jpg', upload_to='static/images')
     rarity_id = models.ForeignKey(Rarity, on_delete=models.CASCADE)
     pack_id = models.ForeignKey(Pack, on_delete=models.CASCADE)
+
+    def get_cards_in_pack(self):
+        return Card.objects.filter(pack_id=self.pack_id)
 
     def __str__(self):
         return self.name

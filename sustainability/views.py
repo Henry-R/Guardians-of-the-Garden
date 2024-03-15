@@ -204,19 +204,25 @@ def upload_plant_view(request):
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-
+                    # Assigns the matched card to the user, creating a new UsersCard object if necessary
+                    user_card, created = UsersCard.objects.get_or_create(
+                        user_id=request.user,
+                        card_id=plant_of_the_day_card
+                    )
+                    user_profile = Userprofile.objects.get(user_id=request.user.id)
                     # Constructs the match message based on whether a match was found
                     if is_match:
-                        # Assigns the matched card to the user, creating a new UsersCard object if necessary
-                        user_card, created = UsersCard.objects.get_or_create(
-                            user_id=request.user,
-                            card_id=plant_of_the_day_card
-                        )
                         if created:
+                            if user_profile.user_owns_all_cards_in_pack():
+                                user_profile.pack_bonus()
+                            user_profile.potd_bonus()
                             match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
                         else:
                             match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
                     else:
+                        if created:
+                            if user_profile.user_owns_all_cards_in_pack():
+                                user_profile.pack_bonus()
                         match_message = "Your plant is not the Plant of the Day."
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "No Plant of the Day set for today."
