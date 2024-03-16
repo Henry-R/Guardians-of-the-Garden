@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="container">
+    <a href="identify-plant">Collect Plant</a>
+</div>
+
     {% for card in cards %}
          <!--If the user does not own the card, show a greyed out card-->
         {% if card not in user_owned_cards %}
