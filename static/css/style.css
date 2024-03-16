@@ -23,11 +23,22 @@ h1 {
 
 body {
     font-family: 'Poppins', sans-serif;
+    
+}
+
+.bg-image {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
     background-image: url(../images/background-2.jpg);
     background-size: cover;
-    background-color: rgba(0, 0, 0, 0.01);
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-position: center;
+    opacity: 0.4;
+    z-index: -1;
 }
 
 .wrapper {
@@ -41,8 +52,8 @@ body {
 }
 
 #sidebar {
-    width: 100px;
-    min-width: 100px;
+    width: 70px;
+    min-width: 70px;
     z-index: 1000;
     transition: all .25s ease-in-out;
     background-color: #EFFCD7;
@@ -72,14 +83,12 @@ body {
 
 .sidebar-logo {
     margin: auto 0;
-    
 }
 
 .sidebar-logo a {
-    color: #010101;
+    color: #000000;
     font-size: 1.15rem;
     font-weight: 600;
-
 }
 
 #sidebar:not(.expand) .sidebar-logo,
