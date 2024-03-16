@@ -23,22 +23,9 @@ h1 {
 
 body {
     font-family: 'Poppins', sans-serif;
-    
-}
-
-.bg-image {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-image: url(../images/background-2.jpg);
+    background-image: url(../images/back.jpg);
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.4;
-    z-index: -1;
 }
 
 .wrapper {
