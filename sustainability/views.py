@@ -17,7 +17,6 @@ from sustainability.models import PlantOfTheDay
 
 
 # Index view
-@login_required()
 def home(request):
     try:
         # Get the current plant of the day from the database

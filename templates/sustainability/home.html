@@ -5,29 +5,41 @@
 
 {% block content %}
 
-<section id="hero">
+<section id="hero" class="min-vh-100 d-flex align-items-center text-center">
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h1>Welcome to Guardians of the Garden</h1>
-                <h5>Plants yay</h5>
+                <h1 class="text-uppercase fw-semiblold display-1">Welcome to Guardians of the Garden</h1>
+                <h5>We are a student led web app designed to encourage sustainability and biodiversity at Exeter.</h5>
+                <div>
+                    <a href="{% url 'signup' %}" class="btn btn-light">Get Gardening</a>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-
-
-
-<div class="container">
-    <div class="intro">
-        <p>Welcome to Guardians of the Garden, your ultimate guide to exploring the lush biodiversity thriving on your campus! Delve into the enchanting world of flora as you embark on an exciting journey to discover, collect, and learn about the diverse plant species scattered across our campus.</p>
-        <p>Through interactive features, informative resources, and engaging community initiatives, we aim to empower individuals to become stewards of biodiversity. Let's embark on this botanical expedition together, cultivating a deeper understanding of the natural world while nurturing a greener, more sustainable future.</p>    
+<section id="sec-1" class="min-vh-100 d-flex align-items-center text-center">
+    <div class="container">
+        <div class="intro">
+            <p>Welcome to Guardians of the Garden, your ultimate guide to exploring the lush biodiversity thriving on your campus! Delve into the enchanting world of flora as you embark on an exciting journey to discover, collect, and learn about the diverse plant species scattered across our campus.</p>
+            <p>Through interactive features, informative resources, and engaging community initiatives, we aim to empower individuals to become stewards of biodiversity. Let's embark on this botanical expedition together, cultivating a deeper understanding of the natural world while nurturing a greener, more sustainable future.</p>    
+        </div>
     </div>
+</section>
 
-    <h5>Current Plant of the Day: {{ current_plant.name }}</h>
-    <!--Show the card that corresponds with the current plant of the day-->
-   {% include 'sustainability/plant_card.html' with card=current_plant %}
-</div>
+<section id="sec-1" class="min-vh-100 d-flex align-items-center text-center">
+    <div class="container">
+        <h2>Current Plant of the Day: {{ current_plant.name }}</h2>
+        <!--Show the card that corresponds with the current plant of the day-->
+       {% include 'sustainability/plant_card.html' with card=current_plant %}
+    </div>
+    
+</section>
+
+
+
+
+
 
 {% endblock %}
