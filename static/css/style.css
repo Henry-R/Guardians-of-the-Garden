@@ -1,5 +1,16 @@
 /*index.html*/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url(../css/clash-display.css);
+
+:root{
+    --c-dark: #000000;
+    --c-brand: #192d11;
+    --c-brand-light: #67a74c;
+    --c-brand-rgb: 55, 106, 33;
+    --c-body: #000000;
+    --font-base: "ClashDisplay", sans-serif;
+    --box-shadow: 0px 15px 25px rgba(0,0,0,0.08);
+    --transition: all 0.5s ease;
+}
 
 ::after,
 ::before {
@@ -10,19 +21,27 @@
 
 a {
     text-decoration: none;
+    color: var(--c-brand);
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--c-brand-light);
 }
 
 li {
     list-style: none;
 }
 
-h1 {
+h1,h2,h3,h4,h5,h6,
+.h1 .h2 .h3 .h4 .h5 .h6 {
     font-weight: 600;
-    font-size: 1.5rem;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-base);
+    line-height: 1.7;;
+    color: var(--c-body);
     background-image: url(../images/back.jpg);
     background-size: cover;
     background-repeat: no-repeat;
@@ -60,19 +79,19 @@ body {
     cursor: pointer;
     border: 0;
     padding: 1rem 1.5rem;
+    color: var(--c-brand);
 }
 
 .toggle-btn i {
     font-size: 1.5rem;
-    color: #000000;
 }
 
 .sidebar-logo {
     margin: auto 0;
+
 }
 
 .sidebar-logo a {
-    color: #000000;
     font-size: 1.15rem;
     font-weight: 600;
 }
@@ -89,7 +108,6 @@ body {
 
 a.sidebar-link {
     padding: .625rem 1.625rem;
-    color: #000000;
     display: block;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -101,9 +119,6 @@ a.sidebar-link {
     margin-right: .75rem;
 }
 
-a.sidebar-link:hover {
-    color: #376a21;
-}
 
 .sidebar-item {
     position: relative;
@@ -144,7 +159,7 @@ a.sidebar-link:hover {
 }
 
 .card-header {
-    color: #050505;
+    color: var(--c-body);
     padding: 10px;
     text-align: center;
     font-weight: bold;
