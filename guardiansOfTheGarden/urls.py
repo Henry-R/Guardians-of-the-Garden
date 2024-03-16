@@ -26,5 +26,3 @@ urlpatterns = [
     path('sustainability/', include("sustainability.urls")),
     path('registration/', include("registration.urls")),
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
