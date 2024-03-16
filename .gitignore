@@ -101,7 +101,3 @@ env/
 
 # enviroment variables
 .env
-
-# Static files
-static/
-staticfiles/
