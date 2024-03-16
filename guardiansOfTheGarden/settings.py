@@ -83,10 +83,7 @@ WSGI_APPLICATION = 'guardiansOfTheGarden.wsgi.app'
 AUTH_USER_MODEL = 'sustainability.Userprofile'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': env.db(),
 }
 
 # Password validation
