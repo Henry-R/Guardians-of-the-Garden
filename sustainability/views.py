@@ -83,7 +83,7 @@ def users_cards_view(request):
 
     # Initialize variables to ensure they are accessible throughout the function
     plant_of_the_day_card = None
-    match_message = "No Plant of the Day set for today."
+    match_message = None
     best_match = None
     first_result = None
     if request.method == 'POST':  # Checks if the request is a POST request
@@ -110,8 +110,6 @@ def users_cards_view(request):
                 best_match = data.get('bestMatch')
                 results = data.get('results', [])
                 first_result = results[0] if results else None
-
-                match_message = "You cannot collect cards using the upload feature."
 
                 # Renders the result template with the collected information
                 return render(request, 'sustainability/plant_identification_results.html', {
