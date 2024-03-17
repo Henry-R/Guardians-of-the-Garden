@@ -14,10 +14,8 @@
             <div class="col-12">
                 <h1 class="text-uppercase fw-semiblold display-1">Your Personal Garden</h1>
                 <div class="container">
-                    <h3>Collect a New Plant:</h3>
                     <div class="container">
-                        <a href="{% url 'upload_plant_image' %}" class="btn btn-light">Upload Photo</a>
-                        <a href="{% url 'capture_plant_image' %}" class="btn btn-light">Take Photo</a>
+                        <a href="{% url 'capture_plant_image' %}" class="btn btn-light">Collect a New Plant</a>
                       </div>
                 </div>
             </div>
@@ -87,6 +85,22 @@
             {% endif %}
         {% endfor %}
         </div>    
+    </div>
+</section>
+
+<section id="upload" class="min-vh-100 d-flex align-items-center text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="text-uppercase fw-semiblold display-1">Identify a Plant</h1>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+               <!--Plant image form-->
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+          </form>
+        </div>
+      </div>
     </div>
 </section>
 
