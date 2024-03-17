@@ -1,7 +1,30 @@
 <!--Page to change the current plant of the day-->
 
 {% extends 'index.html' %}
+
+{% block title%}
+    Edit plant of the day
+{% endblock%}
+
 {% block content %}
+
+<section id="cards" class="min-vh-100 d-flex align-items-center text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-uppercase fw-semiblold display-1">Select Plant of the Day</h1>
+                {% if current_plant %}
+                <h5>Current Plant of the Day: {{ current_plant }}</h5>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
 <div class="container">
     <h5>Select Plant of the Day</h5>
