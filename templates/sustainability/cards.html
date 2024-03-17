@@ -14,7 +14,11 @@
             <div class="col-12">
                 <h1 class="text-uppercase fw-semiblold display-1">Your Personal Garden</h1>
                 <div class="container">
-                    <a href="identify-plant" class="btn btn-light">Collect New Plant</a>
+                    <h3>Collect a New Plant:</h3>
+                    <div class="container">
+                        <a href="{% url 'upload_plant_image' %}" class="btn btn-light">Upload Photo</a>
+                        <a href="{% url 'capture_plant_image' %}" class="btn btn-light">Take Photo</a>
+                      </div>
                 </div>
             </div>
         </div>
