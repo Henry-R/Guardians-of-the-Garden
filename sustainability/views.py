@@ -82,8 +82,6 @@ def users_cards_view(request):
     user_owned_cards = [uc.card_id for uc in user_cards]
 
     # Initialize variables to ensure they are accessible throughout the function
-    plant_of_the_day_card = None
-    match_message = "No Plant of the Day set for today."
     best_match = None
     first_result = None
     if request.method == 'POST':  # Checks if the request is a POST request
@@ -110,33 +108,8 @@ def users_cards_view(request):
                 best_match = data.get('bestMatch')
                 results = data.get('results', [])
                 first_result = results[0] if results else None
-
-                try:
-                    today = timezone.now().date()  # Gets today's date
-                    # Retrieves the PlantOfTheDay object for today
-                    plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
-                    # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
-
-                    # Checks if the plant of the day's name is contained within any of the common names returned by the API
-                    common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
-                    is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-
-                    # Constructs the match message based on whether a match was found
-                    if is_match:
-                        # Assigns the matched card to the user, creating a new UsersCard object if necessary
-                        user_card, created = UsersCard.objects.get_or_create(
-                            user_id=request.user,
-                            card_id=plant_of_the_day_card
-                        )
-                        if created:
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
-                        else:
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
-                    else:
-                        match_message = "Your plant is not the Plant of the Day."
-                except PlantOfTheDay.DoesNotExist:
-                    match_message = "No Plant of the Day set for today."
+                
+                match_message = "You cannot collect cards using the upload feature."
 
                 # Renders the result template with the collected information
                 return render(request, 'sustainability/plant_identification_results.html', {
