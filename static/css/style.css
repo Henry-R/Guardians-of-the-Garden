@@ -3,7 +3,7 @@
 
 :root{
     --c-dark: #000000;
-    --c-brand: #192d11;
+    --c-brand: #203916;
     --c-brand-light: #67a74c;
     --c-brand-rgb: 55, 106, 33;
     --c-body: #000000;
@@ -108,6 +108,8 @@ img {
     font-size: 1.5rem;
 }
 
+
+
 .sidebar-logo {
     margin: auto 0;
 
@@ -186,7 +188,7 @@ a.sidebar-link {
 .section-title .line {
     width: 60px;
     height: 4px;
-    background-color: var(--c-brand-light);
+    background-color: var(--c-brand);
     margin: 16px auto 24px auto;
 }
 
