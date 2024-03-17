@@ -83,14 +83,8 @@ WSGI_APPLICATION = 'guardiansOfTheGarden.wsgi.app'
 AUTH_USER_MODEL = 'sustainability.Userprofile'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DATABASE_NAME"),
-        'USER': env("DATABASE_USER"),
-        'PASSWORD': env("DATABASE_PASSWORD"),
-        'HOST': env("DATABASE_HOST"),
-        'PORT': env("DATABASE_PORT"),
-    }}
+    'default': env.db("DATABASE_URL")
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
