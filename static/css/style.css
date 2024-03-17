@@ -46,6 +46,13 @@ body {
     
 }
 
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    box-shadow: var(--box-shadow);
+  }
+
 .bg-image {
     display: block;
     position: fixed;
@@ -60,10 +67,6 @@ body {
     z-index: -1;
 }
 
-.section-padding {
-    padding-top: 140px;
-    padding-bottom: 140px;
-}
 
 .wrapper {
     display: flex;
@@ -166,11 +169,33 @@ a.sidebar-link {
 
 /*home.html*/
 
-
-#hero {
-    
+#about {
+    background-color: rgba(var(--c-brand-rgb),0.6);
 }
 
+.section-padding {
+    padding-top: 140px;
+    padding-bottom: 140px;
+    width: 100%;
+    color: #f0f0f0;
+}
+
+.section-title {
+    margin-bottom: 40px;
+}
+
+.section-title .line {
+    width: 60px;
+    height: 4px;
+    background-color: var(--c-brand-light);
+    margin: 16px auto 24px auto;
+}
+
+.section-title p {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 /*plant_card.html*/
 .card{
