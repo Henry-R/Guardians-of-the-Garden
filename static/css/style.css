@@ -3,6 +3,7 @@
 
 :root{
     --c-dark: #000000;
+    --c-light: #f0f0f0;
     --c-brand: #203916;
     --c-brand-light: #67a74c;
     --c-brand-rgb: 55, 106, 33;
@@ -171,15 +172,17 @@ a.sidebar-link {
 
 /*home.html*/
 
+/*about*/
 #about {
     background-color: rgba(var(--c-brand-rgb),0.6);
+    color: var(--c-light);
+
 }
 
 .section-padding {
     padding-top: 140px;
     padding-bottom: 140px;
     width: 100%;
-    color: #f0f0f0;
 }
 
 .section-title {
@@ -198,6 +201,51 @@ a.sidebar-link {
     margin-left: auto;
     margin-right: auto;
 }
+
+/*how to play*/
+
+.theme-shadow {
+    box-shadow: var(--box-shadow);
+}
+
+.iconbox {
+    color: var(--c-brand);
+}
+
+/*how-box*/
+.how-box {
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.how-box::after
+{
+    content: "";
+    width: 40px;
+    height: 40px;
+    background: rgba(var(--c-brand-rgb),0.2);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transition: var(--transition);
+}
+
+.how-box:hover::after {
+    width: 100%;
+    height: 100%;
+    background-color: var(--c-brand-light);
+    z-index: -1;
+}
+
+.how-box:hover h5,
+.how-box:hover p,
+.how-box:hover .iconbox
+{
+    color: var(--c-light);
+}
+
+
 
 /*plant_card.html*/
 .card{

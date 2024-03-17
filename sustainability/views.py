@@ -26,6 +26,9 @@ def home(request):
         # Render the index page
     return render(request, 'sustainability/home.html', {'current_plant': current_plant})
 
+# Exeter view
+def exeter_view(request):
+    return render(request, 'sustainability/exeter.html')
 
 # View to edit the plant of the day - only for game masters with the permission
 @login_required()

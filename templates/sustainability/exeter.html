@@ -1,0 +1,23 @@
+ <!--Homepage-->
+ {% extends 'index.html' %}
+ {% load static %}
+ 
+ {% block title %}Home{% endblock %}
+ 
+ {% block content %}
+ 
+ <section id="hero" class="min-vh-100 d-flex align-items-center text-center">
+     <div class="container">
+         <div class="row">
+             <div class="col-12">
+                 <h1 class="text-uppercase fw-semibold display-1">Welcome to Guardians of the Garden</h1>
+                 <h5 class="mt-3 mb-4">We are a student led web app designed to encourage sustainability and biodiversity at Exeter.</h5>
+                 <div>
+                     <a href="{% url 'login' %}" class="btn btn-light">Get Gardening</a>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </section>
+
+ {% endblock %}

@@ -38,6 +38,12 @@
                         <span>Home</span>
                     </a>
                 </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'exeter' %}" class="sidebar-link">
+                        <i class="lni lni-trees"></i>
+                        <span>Exeter Uni</span>
+                    </a>
+                </li>
                 {% if user.is_authenticated %}
                     <li class="sidebar-item">
                         <a href="{% url 'cards' %}" class="sidebar-link">
