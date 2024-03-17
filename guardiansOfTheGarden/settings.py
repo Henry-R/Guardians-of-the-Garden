@@ -26,6 +26,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, 'variables.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 
+CSRF_COOKIE_SECURE = env('PRODUCTION')
+SESSION_COOKIE_SECURE = env('PRODUCTION')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG')
 
