@@ -74,13 +74,57 @@ def users_cards_view(request):
     for pack in packs:
         pack_cards = Card.objects.filter(pack_id=pack.pack_id)
         pack_list.append(pack_cards)
-
     # Retrieve the logged in user
     current_user = request.user
     # Get a list of all the users cards 
     user_cards = UsersCard.objects.filter(user_id=current_user)
     # Gets all the cards associated with a users card belonging to the player
     user_owned_cards = [uc.card_id for uc in user_cards]
+
+    # Initialize variables to ensure they are accessible throughout the function
+    plant_of_the_day_card = None
+    match_message = "No Plant of the Day set for today."
+    best_match = None
+    first_result = None
+    if request.method == 'POST':  # Checks if the request is a POST request
+        form = ImageUploadForm(request.POST, request.FILES)  # Initializes the form with POST data and files
+        if form.is_valid():  # Validates the form
+            # Prepares the request to the PlantNet API
+            api_url = 'https://my-api.plantnet.org/v2/identify/all'
+            params = {
+                "include-related-images": "false",
+                "no-reject": "false",
+                "lang": "en",
+                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+            }
+            image_file = request.FILES['image']  # Retrieves the uploaded image from the form
+            files = {'images': (image_file.name, image_file, 'image/jpeg')}
+
+            # Sends the request to the PlantNet API
+            response = requests.post(api_url, params=params, files=files)
+
+            if response.status_code == 200:  # Checks if the API request was successful
+                data = response.json()  # Parses the JSON response from the API
+
+                # Extracts relevant data from the response
+                best_match = data.get('bestMatch')
+                results = data.get('results', [])
+                first_result = results[0] if results else None
+
+                match_message = "You cannot collect cards using the upload feature."
+
+                # Renders the result template with the collected information
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
+            else:
+                # Returns an error response if the API request failed
+                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+    else:  # Handles the case where the request is not a POST request, showing the form
+        form = ImageUploadForm()
 
     context = {
         'packob1' : packs[0],
@@ -94,6 +138,7 @@ def users_cards_view(request):
         'packob5' : packs[4],
         'pack5' : pack_list[4],
         'user_owned_cards': user_owned_cards,
+        'form': form,
     }
     return render(request, 'sustainability/cards.html', context=context)
 
@@ -108,7 +153,7 @@ def user_account_view(request):
 
 @login_required
 def identify_plant_view(request):
-    return render(request, 'sustainability/identify_plant_form.html')
+    return render(request, 'sustainability/cards.html')
 
 @login_required  
 def upload_plant_view(request):
@@ -181,7 +226,7 @@ def upload_plant_view(request):
                 return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
-    return render(request, 'sustainability/upload_form.html', {'form': form})
+    return render(request, 'sustainability/cards.html', {'form': form})
 
 @login_required  
 def capture_plant_view(request):
