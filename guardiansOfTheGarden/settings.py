@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'guardiansOfTheGarden.wsgi.app'
 AUTH_USER_MODEL = 'sustainability.Userprofile'
 
 DATABASES = {
-    'default': env.db(),
+    'default': env.db("DATABASE_URL"),
 }
 
 # Password validation
