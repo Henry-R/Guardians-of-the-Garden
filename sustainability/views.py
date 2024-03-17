@@ -83,8 +83,16 @@ def users_cards_view(request):
     user_owned_cards = [uc.card_id for uc in user_cards]
 
     context = {
-        'packs': pack_list,
-        'packsobjects': packs,
+        'packob1' : packs[0],
+        'pack1' : pack_list[0],
+        'packob2' : packs[1],
+        'pack2' : pack_list[1],
+        'packob3' : packs[2],
+        'pack3' : pack_list[2],
+        'packob4' : packs[3],
+        'pack4' : pack_list[3],
+        'packob5' : packs[4],
+        'pack5' : pack_list[4],
         'user_owned_cards': user_owned_cards,
     }
     return render(request, 'sustainability/cards.html', context=context)
