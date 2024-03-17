@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 
 from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, ChangeDetailsForm
-from sustainability.models import Card, UsersCard, Userprofile
+from sustainability.models import Card, UsersCard, Userprofile, Pack
 
 from sustainability.forms import ImageUploadForm
 from sustainability.models import PlantOfTheDay
@@ -68,8 +68,13 @@ def leaderboard_view(request):
 # User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
 def users_cards_view(request):
-    # Get a list of all the cards in the game
-    cards = Card.objects.all()
+
+    pack_list = []
+    packs = Pack.objects.all()
+    for pack in packs:
+        pack_cards = Card.objects.filter(pack_id=pack.pack_id)
+        pack_list.append(pack_cards)
+
     # Retrieve the logged in user
     current_user = request.user
     # Get a list of all the users cards 
@@ -78,7 +83,16 @@ def users_cards_view(request):
     user_owned_cards = [uc.card_id for uc in user_cards]
 
     context = {
-        'cards': cards,
+        'packob1' : packs[0],
+        'pack1' : pack_list[0],
+        'packob2' : packs[1],
+        'pack2' : pack_list[1],
+        'packob3' : packs[2],
+        'pack3' : pack_list[2],
+        'packob4' : packs[3],
+        'pack4' : pack_list[3],
+        'packob5' : packs[4],
+        'pack5' : pack_list[4],
         'user_owned_cards': user_owned_cards,
     }
     return render(request, 'sustainability/cards.html', context=context)

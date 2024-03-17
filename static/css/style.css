@@ -1,17 +1,5 @@
 /*index.html*/
-@import url(../css/clash-display.css);
-
-:root{
-    --c-dark: #000000;
-    --c-brand: #192d11;
-    --c-brand-light: #67a74c;
-    --c-brand-rgb: 55, 106, 33;
-    --c-body: #000000;
-    --font-base: "ClashDisplay", sans-serif;
-    --box-shadow: 0px 15px 25px rgba(0,0,0,0.08);
-    --transition: all 0.5s ease;
-    --background-image: url(../images/back.jpg);
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 ::after,
 ::before {
@@ -22,51 +10,23 @@
 
 a {
     text-decoration: none;
-    color: var(--c-brand);
-    transition: var(--transition);
-}
-
-a:hover {
-    color: var(--c-brand-light);
 }
 
 li {
     list-style: none;
 }
 
-h1,h2,h3,h4,h5,h6,
-.h1 .h2 .h3 .h4 .h5 .h6 {
+h1 {
     font-weight: 600;
+    font-size: 1.5rem;
 }
 
 body {
-    font-family: var(--font-base);
-    line-height: 1.7;;
-    color: var(--c-body);
-    
-}
-
-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    box-shadow: var(--box-shadow);
-  }
-
-.bg-image {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-image: var(--background-image);
+    font-family: 'Poppins', sans-serif;
+    background-image: url(../images/background.jpeg);
+    background-color: #cccccc;
     background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: -1;
 }
-
 
 .wrapper {
     display: flex;
@@ -76,19 +36,20 @@ img {
     min-height: 100vh;
     width: 100%;
     transition: all 0.35s ease-in-out;
+    background-color: #fafbfe;
 }
 
 #sidebar {
     width: 100px;
-    min-width: 70px;
+    min-width: 100px;
     z-index: 1000;
     transition: all .25s ease-in-out;
+    background-color: #EFFCD7;
     display: flex;
     flex-direction: column;
     height: 100vh;
     position: sticky;
     top: 0px;
-    box-shadow: var(--box-shadow);
 }
 
 #sidebar.expand {
@@ -101,21 +62,23 @@ img {
     cursor: pointer;
     border: 0;
     padding: 1rem 1.5rem;
-    color: var(--c-brand);
 }
 
 .toggle-btn i {
     font-size: 1.5rem;
+    color: #000000;
 }
 
 .sidebar-logo {
     margin: auto 0;
-
+    
 }
 
 .sidebar-logo a {
+    color: #010101;
     font-size: 1.15rem;
     font-weight: 600;
+
 }
 
 #sidebar:not(.expand) .sidebar-logo,
@@ -130,6 +93,7 @@ img {
 
 a.sidebar-link {
     padding: .625rem 1.625rem;
+    color: #000000;
     display: block;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -141,6 +105,10 @@ a.sidebar-link {
     margin-right: .75rem;
 }
 
+a.sidebar-link:hover {
+    background-color: #C7DF98;
+    border-left: 3px solid #376a21;
+}
 
 .sidebar-item {
     position: relative;
@@ -151,7 +119,6 @@ a.sidebar-link {
     position: fixed;
     display: inline-block;
     bottom: 0;
-    width: 100%;
 }
 
 
@@ -167,35 +134,6 @@ a.sidebar-link {
     font-family: Arial, sans-serif;
   }
 
-/*home.html*/
-
-#about {
-    background-color: rgba(var(--c-brand-rgb),0.6);
-}
-
-.section-padding {
-    padding-top: 140px;
-    padding-bottom: 140px;
-    width: 100%;
-    color: #f0f0f0;
-}
-
-.section-title {
-    margin-bottom: 40px;
-}
-
-.section-title .line {
-    width: 60px;
-    height: 4px;
-    background-color: var(--c-brand-light);
-    margin: 16px auto 24px auto;
-}
-
-.section-title p {
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-}
 
 /*plant_card.html*/
 .card{
@@ -210,7 +148,7 @@ a.sidebar-link {
 }
 
 .card-header {
-    color: var(--c-body);
+    color: #050505;
     padding: 10px;
     text-align: center;
     font-weight: bold;
