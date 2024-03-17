@@ -23,8 +23,8 @@
 
 <section id="sec-1" class="min-vh-100 d-flex align-items-center text-center">
     <div class="container">
-        {% for pack, packobject in packs, packsobjects%}
-            <h3>Pack: {{ packsobjects.pack_name }}</h3>
+        {% for pack in packs%}
+            <h3>Pack: {{ packsobjects.pack_name }}</h>
             <div class="card-group">
             {% for card in pack %}
                 <!--If the user does not own the card, show a greyed out card-->
