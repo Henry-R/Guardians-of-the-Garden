@@ -1,6 +1,6 @@
 import base64
 
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth import get_user
@@ -41,7 +41,7 @@ def exeter_view(request):
 # View to edit the plant of the day - only for game masters with the permission
 @login_required()
 def plant_of_the_day_view(request):
-    if not request.user.user_permissions.filter(codename=permissions.ADD_PLANT_OF_THE_DAY):
+    if not request.user.user_permissions.filter(codename=sustainability.permissions.ADD_PLANT_OF_THE_DAY):
         return redirect('home')
     # Get html form post request from the edit plant of the day page.
     if request.method == 'POST':
@@ -144,10 +144,10 @@ def join_leaderboard(request):
         form = JoinLeaderboardForm(initial=initial_data)
     return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data})
 
-
 # User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
 def users_cards_view(request):
+
     pack_list = []
     packs = Pack.objects.all()
     for pack in packs:
@@ -386,6 +386,7 @@ def capture_plant_view(request):
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "There is no Plant of the Day set for today."
 
+
                 # Renders the result template with the collected information
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
@@ -410,6 +411,7 @@ def is_within_area(latitude, longitude):
 
 @login_required()
 def leave_leaderboard(request, leaderboard_id):
+
     if request.user.is_authenticated:
         leaderboard = get_object_or_404(Leaderboard, leaderboard_id=leaderboard_id)
         if LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).exists():
