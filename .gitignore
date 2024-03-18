@@ -86,6 +86,7 @@ fabric.properties
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 .DS_Store
+.DS_Store?
 
 # Local History for Visual Studio Code
 .history/
@@ -95,5 +96,8 @@ fabric.properties
 
 __pycache__/
 
-#virtual envs
+# virtual environments
 env/
+
+# enviroment variables
+.env

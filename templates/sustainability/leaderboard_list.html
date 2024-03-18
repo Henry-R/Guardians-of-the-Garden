@@ -1,0 +1,32 @@
+ <!-- Leaderboard list view ->
+
+{% extends 'index.html' %}
+ {% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<div class="container">
+       <h1>My Leaderboards</h1>
+    <ul>
+        {% for leaderboard in leaderboard_list %}
+            <li><a href="{% url 'leaderboard_detail' leaderboard.leaderboard_id %}"> {{ leaderboard.leaderboard_name }}</a></li>
+        {% endfor %}
+    </ul>
+      <h1>Public Leaderboards</h1>
+    <ul>
+        {% for leaderboard in public_list %}
+            <li><a href="{% url 'leaderboard_detail' leaderboard.leaderboard_id %}"> {{ leaderboard.leaderboard_name }}</a></li>
+        {% endfor %}
+    </ul>
+<form action="{% url 'create_leaderboard' %}" method="get">
+        <button type="submit">Create Leaderboard</button>
+    </form>
+
+
+    <form action="{% url 'join_leaderboard' %}" method="get">
+        <button type="submit">Join Leaderboard</button>
+    </form>
+</div>
+
+{% endblock %}
