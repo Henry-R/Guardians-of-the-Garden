@@ -52,7 +52,6 @@ img {
     display: block;
     max-width: 100%;
     height: auto;
-    box-shadow: var(--box-shadow);
   }
 
 .bg-image {
@@ -246,7 +245,19 @@ a.sidebar-link {
     color: var(--c-light);
 }
 
+/*Exeter Info*/
+.carousel-item {
+    height: 100vh;
+    width: 100vh;
+    color: var(--c-light);
+    text-align: center;
+    justify-content: between;
+}
 
+.carousel-inner {
+    background-color: rgba(var(--c-brand-rgb),0.6);
+
+}
 
 /*plant_card.html*/
 .card{
