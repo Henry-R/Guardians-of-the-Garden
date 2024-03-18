@@ -257,6 +257,8 @@ def capture_plant_view(request):
         form = ImageCaptureForm(request.POST)
         if form.is_valid():
             image_data = form.cleaned_data['image_data']
+            latitude = form.cleaned_data.get('latitude')
+            longitude = form.cleaned_data.get('longitude')
             format, imgstr = image_data.split(
                 ';base64,')  # Assumes image_data is in the format: "data:image/png;base64,iVBORw0KGgo..."
             ext = format.split('/')[-1]  # Determines the extension (png, jpg, etc.)
@@ -286,28 +288,33 @@ def capture_plant_view(request):
                     today = timezone.now().date()  # Gets today's date
                     # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
-                    # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
+                    plant_of_the_day_name = plant_of_the_day_card.name.lower()  # Gets the name of the plant of the day, converting it to lowercase
 
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
 
-                    # Constructs the match message based on whether a match was found
                     if is_match:
-                        # Assigns the matched card to the user, creating a new UsersCard object if necessary
-                        user_card, created = UsersCard.objects.get_or_create(
-                            user_id=request.user,
-                            card_id=plant_of_the_day_card
-                        )
-                        if created:
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
+                        if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
+                            # Assigns the matched card to the user, creating a new UsersCard object if necessary
+                            user_card, created = UsersCard.objects.get_or_create(
+                                user_id=request.user,
+                                card_id=plant_of_the_day_card
+                            )
+                            if created:
+                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your collection."
+                            else:
+                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your collection."
+                        elif latitude is None or longitude is None:
+                            match_message = "No location provided, unable to verify if the plant was taken in a valid location."
                         else:
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
+                            match_message = "The location of the plant is invalid, unable to collect card."
                     else:
-                        match_message = "Your plant is not the Plant of the Day."
+                        match_message = "The plant you identified doesn't match the Plant of the Day."
+
                 except PlantOfTheDay.DoesNotExist:
-                    match_message = "No Plant of the Day set for today."
+                    match_message = "There is no Plant of the Day set for today."
+
 
                 # Renders the result template with the collected information
                 return render(request, 'sustainability/plant_identification_results.html', {
@@ -322,6 +329,12 @@ def capture_plant_view(request):
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
     return render(request, 'sustainability/capture_form.html', {'form': form})
+
+def is_within_area(latitude, longitude):
+    # returns True if the coordinates are within the desired area
+    uni_lat, uni_lon = 50.7354, -3.5339 #University of Exeter's main coordinates (approximate)
+    radius = 0.01  # Approximate "radius" in degrees to consider a location valid
+    return abs(float(latitude) - uni_lat) <= radius and abs(float(longitude) - uni_lon) <= radius
 
 @login_required()
 def leave_leaderboard(request, leaderboard_id):
@@ -348,3 +361,4 @@ def change_details(request):
     else:
         form = ChangeDetailsForm(instance=request.user)
     return render(request, 'sustainability/change_details.html', {'form': form})
+
