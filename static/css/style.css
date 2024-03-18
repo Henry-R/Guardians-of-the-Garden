@@ -254,10 +254,19 @@ a.sidebar-link {
     justify-content: between;
 }
 
+.carousel-item.active .img-fluid {
+    object-fit: cover;
+  }
+
 .carousel-inner {
     background-color: rgba(var(--c-brand-rgb),0.6);
-
 }
+
+.guide img:hover {
+    opacity: 0.8;
+}
+
+
 
 /*plant_card.html*/
 .card{
