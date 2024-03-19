@@ -173,7 +173,7 @@ a.sidebar-link {
 /*home.html*/
 
 /*about*/
-#meadows,
+#nature-guides,
 #about {
     background-color: rgba(var(--c-brand-rgb),0.6);
     color: var(--c-light);
@@ -246,22 +246,6 @@ a.sidebar-link {
 }
 
 /*Exeter Info*/
-.carousel-item {
-    height: 100vh;
-    width: 100vh;
-    color: var(--c-light);
-    text-align: center;
-    justify-content: between;
-}
-
-.carousel-item.active .img-fluid {
-    object-fit: cover;
-  }
-
-.carousel-inner {
-    background-color: rgba(var(--c-brand-rgb),0.6);
-}
-
 .guide {
     overflow: hidden;
     padding: 50px;
@@ -338,4 +322,12 @@ a.sidebar-link {
     height: 200px;
     object-fit: cover;
     margin-bottom: 10px;
+}
+
+/*Leaderboard list*/
+
+#leaderboards {
+    height: 100vh;
+    width: 100vh;
+    position: absolute;
 }
