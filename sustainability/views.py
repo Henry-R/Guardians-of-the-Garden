@@ -212,8 +212,8 @@ def users_cards_view(request):
         'pack3': pack_list[2],
         'packob4': packs[3],
         'pack4': pack_list[3],
-        'packob4': packs[4],
-        'pack4': pack_list[4],
+        'packob5': packs[4],
+        'pack5': pack_list[4],
         'user_owned_cards': user_owned_cards,
         'form': form,
     }
