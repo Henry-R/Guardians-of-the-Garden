@@ -1,11 +1,12 @@
  <!-- Leaderboard view --- Unfinished -->
 
 {% extends 'index.html' %}
- {% block title %}Leaderboard{% endblock %}
+{% load static %}
+
+{% block title %}Leaderboard{% endblock %}
 
 {% block content %}
 
-{% load static %}
 <div class="container">
        <h2 class="mt-4 mb-3">Leaderboard: {{leaderboard.leaderboard_name}} </h2>
     <div class="table-responsive">
@@ -39,6 +40,5 @@
     </form>
 {% endif %}
 </div>
-
 
 {% endblock %}
