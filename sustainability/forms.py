@@ -29,12 +29,16 @@ class ImageCaptureForm(forms.Form):
     latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
     longitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
-class ChangeDetailsForm(UserChangeForm):
-    email = forms.EmailField(max_length=150, help_text='Enter a valid email address.')
+class ChangeDetailsForm(forms.ModelForm):
+    username = forms.CharField(max_length=100,
+                               required=True,
+                               widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True,
+                             widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Userprofile
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email']
 
 class BecomeGameMasterForm(forms.Form):
     code = forms.CharField(max_length=10, required=True)
