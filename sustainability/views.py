@@ -2,6 +2,7 @@ import base64
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth import get_user
 from django.contrib.auth.decorators import permission_required
@@ -72,8 +73,19 @@ def account_view(request):
 
 
 @login_required()
-def download_details():
-    pass
+def download_account(request):
+    user = Userprofile.objects.get(id=request.user.id)
+    groups = serializers.serialize('json', user.groups.all())
+    permissions = serializers.serialize('json', user.user_permissions.all())
+    return JsonResponse({
+        'username': user.username,
+        'first name': user.first_name,
+        'last name': user.last_name,
+        'email': user.email,
+        'score': user.score,
+        'groups': groups,
+        'permissions': permissions,
+    })
 
 
 # Part of account view
