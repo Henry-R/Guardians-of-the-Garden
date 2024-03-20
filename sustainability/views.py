@@ -72,7 +72,7 @@ def account_view(request):
 
 
 @login_required()
-def change_details():
+def download_details():
     pass
 
 
