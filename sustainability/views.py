@@ -31,18 +31,21 @@ def home(request):
     except PlantOfTheDay.DoesNotExist:
         current_plant = None
         # Render the index page
-    return render(request, 'sustainability/home.html', {'current_plant': current_plant})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+
+    return render(request, 'sustainability/home.html', {'current_plant': current_plant, 'has_permission': has_permission})
 
 
 # Exeter view
 def exeter_view(request):
-    return render(request, 'sustainability/exeter.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/exeter.html', {'has_permission': has_permission})
 
 
 # View to edit the plant of the day - only for game masters with the permission
 @login_required()
 def plant_of_the_day_view(request):
-    if not request.user.user_permissions.filter(codename=sustainability.permissions.ADD_PLANT_OF_THE_DAY):
+    if not  request.user.has_perm('sustainability.add_plant_of_the_day'):
         return redirect('home')
     # Get html form post request from the edit plant of the day page.
     if request.method == 'POST':
@@ -63,13 +66,15 @@ def plant_of_the_day_view(request):
             current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
         except PlantOfTheDay.DoesNotExist:
             current_plant = "Not selected"
-    return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant, 'has_permission': has_permission})
 
 
 # Account view shows the options the user has available such as viewing cards and taking a photo
 @login_required()
 def account_view(request):
-    return render(request, 'sustainability/user.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/user.html', {'has_permission': has_permission})
 
 
 @login_required()
@@ -116,9 +121,10 @@ def leaderboard_view(request, leaderboard_id):
     invite_link = request.build_absolute_uri(
         reverse('join_leaderboard') + f'?leaderboard_code={leaderboard.leaderboard_code}')
     # Pass the user profiles to the template
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     return render(request, 'sustainability/leaderboard.html',
                   {'user_profiles': user_profiles, 'leaderboard': leaderboard, 'invite_link': invite_link,
-                   'user_in_leaderboard': user_in_leaderboard})
+                   'user_in_leaderboard': user_in_leaderboard, 'has_permission': has_permission})
 
 
 @login_required()
@@ -126,9 +132,9 @@ def leaderboard_list_view(request):
     leaderboards = LeaderboardMember.objects.filter(member_id=request.user).values_list('leaderboard_id', flat=True)
     leaderboard_list = Leaderboard.objects.filter(leaderboard_id__in=leaderboards)
     public_list = Leaderboard.objects.filter(is_public=True)
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     return render(request, 'sustainability/leaderboard_list.html',
-                  {'leaderboard_list': leaderboard_list, 'public_list': public_list})
+                  {'leaderboard_list': leaderboard_list, 'public_list': public_list, 'has_permission': has_permission})
 
 
 @login_required()
@@ -159,9 +165,8 @@ def create_leaderboard_view(request):
             form = LeaderboardForm()
         else:
             form = NonGameMLeaderboardForm()
-    
-    return render(request, 'sustainability/create_leaderboard.html', {'form': form})
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/create_leaderboard.html', {'form': form, 'has_permission': has_permission})
 
 @login_required()
 def join_leaderboard(request):
@@ -182,7 +187,8 @@ def join_leaderboard(request):
             return redirect('leaderboard_detail', leaderboard_id=leaderboard.leaderboard_id)
     else:
         form = JoinLeaderboardForm(initial=initial_data)
-    return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data, 'has_permission': has_permission})
 
 # User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
@@ -246,7 +252,7 @@ def users_cards_view(request):
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     context = {
         'packob1': packs[0],
         'pack1': pack_list[0],
@@ -260,7 +266,9 @@ def users_cards_view(request):
         'pack5': pack_list[4],
         'user_owned_cards': user_owned_cards,
         'form': form,
+        'has_permission': has_permission,
     }
+
     return render(request, 'sustainability/cards.html', context=context)
 
 
@@ -290,12 +298,14 @@ def user_account_view(request):
                 messages.error(request, 'Invalid code.')
 
     user = get_user(request)
-    return render(request, 'sustainability/account.html', context={'user': user})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/account.html', context={'user': user, 'has_permission': has_permission,})
 
 
 @login_required
 def identify_plant_view(request):
-    return render(request, 'sustainability/cards.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/cards.html', {'has_permission': has_permission,})
 
 
 @login_required
@@ -330,60 +340,33 @@ def upload_plant_view(request):
                 results = data.get('results', [])
                 first_result = results[0] if results else None
 
-                try:
-                    today = timezone.now().date()  # Gets today's date
-                    # Retrieves the PlantOfTheDay object for today
-                    plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
-                    # Gets the name of the plant of the day, converting it to lowercase for comparison
-                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
-
-                    # Checks if the plant of the day's name is contained within any of the common names returned by the API
-                    common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
-                    is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-                    matching_card = Card.get_card_by_common_name(common_names)
-                    created = False
-                    # Assigns the matched card to the user, creating a new UsersCard object if necessary
-                    if matching_card is not None:
-                        user_card, created = UsersCard.objects.get_or_create(
-                            user_id=request.user,
-                            card_id=matching_card
-                        )
-
-                    user_profile = Userprofile.objects.get(id=request.user.id)
-                    # Constructs the match message based on whether a match was found
-                    if is_match:
-                        if created:
-                            if user_profile.user_owns_all_cards_in_pack(user_card.card_id):
-                                user_profile.pack_bonus()
-                            user_profile.potd_bonus()
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! This card has been added to your collection!"
-                        else:
-                            match_message = "Congratulations! Your plant is related to the Plant of the Day! However, you already have this card in your collection."
-                    else:
-                        if created:
-                            if user_profile.user_owns_all_cards_in_pack(user_card.card_id):
-                                user_profile.pack_bonus()
-                        match_message = "Your plant is not the Plant of the Day."
-                except PlantOfTheDay.DoesNotExist:
-                    match_message = "No Plant of the Day set for today."
+                today = timezone.now().date()  # Gets today's date
+                # Retrieves the PlantOfTheDay object for today
+                plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
+                match_message = None
 
                 # Renders the result template with the collected information
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
             else:
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
-    return render(request, 'sustainability/cards.html', {'form': form})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/cards.html', {'form': form, 'has_permission': has_permission,})
 
 
 @login_required
@@ -433,24 +416,42 @@ def capture_plant_view(request):
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-
-                    if is_match:
-                        if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
+                    if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
+                        if is_match:
                             # Assigns the matched card to the user, creating a new UsersCard object if necessary
                             user_card, created = UsersCard.objects.get_or_create(
                                 user_id=request.user,
                                 card_id=plant_of_the_day_card
                             )
+                            user = request.user
+                            user.all_cards_in_pack_bonus(plant_of_the_day_card.card_id)
+                            request.user.potd_bonus()
                             if created:
-                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your collection."
+                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your garden. You have collected 3 bonus points :)"
                             else:
-                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your collection."
-                        elif latitude is None or longitude is None:
-                            match_message = "No location provided, unable to verify if the plant was taken in a valid location."
+                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your garden."
                         else:
-                            match_message = "The location of the plant is invalid, unable to collect card."
+                            # Identify the card from API response's common names
+                            identified_card = Card.get_card_by_common_name(common_names)
+                            if identified_card:
+                                # If the identified card exists and belongs to a pack, add it to the user's collection
+                                user_card, created = UsersCard.objects.get_or_create(
+                                user_id=request.user,
+                                card_id=identified_card
+                                )
+                                user = request.user
+                                user.all_cards_in_pack_bonus(identified_card.card.id)
+                                if created:
+                                    match_message = "The plant you identified doesnt match the Plant of the Day. A new card has been added to your garden"
+                                else:
+                                    match_message = "The plant you identified is already in your garden."
+                            else:
+                                # Handles the case where no matching card was found or it doesn't belong to any pack
+                                match_message = "No matching card in the packs or no match with Plant of the Day."
+                    elif latitude is None or longitude is None:
+                            match_message = "No location provided, unable to verify if the plant was taken in a valid location."
                     else:
-                        match_message = "The plant you identified doesn't match the Plant of the Day."
+                            match_message = "The location of the plant is invalid, unable to collect card."
 
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "There is no Plant of the Day set for today."
@@ -490,6 +491,8 @@ def leave_leaderboard(request, leaderboard_id):
         if LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).exists():
             # Remove the user from the leaderboard members
             LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).delete()
+            if len(LeaderboardMember.objects.filter(leaderboard_id=leaderboard)) == 0:
+                leaderboard.delete()
         return redirect(
             'leaderboard')  # Redirect to the home page or any other appropriate URL after leaving the leaderboard
     return None
@@ -502,15 +505,11 @@ def change_details(request):
         
         if form.is_valid():
             form.save()
-            #user_profile = Userprofile.objects.get(pk=request.user)
-            #user_profile.username = form.cleaned_data['username']
-            #user_profile.email = form.cleaned_data['email']
-            #user_profile.password = form.cleaned_data['password']
-            #user_profile.save()
             return redirect('account')
     else:
         form = ChangeDetailsForm(instance=request.user)
-    return render(request, 'sustainability/change_details.html', {'form': form})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/change_details.html', {'form': form, 'has_permission': has_permission,})
 
 
 from django.contrib.auth.models import User
@@ -528,7 +527,7 @@ def code_enter_view(request):
                 if not gamemastercode.used:
                     user = request.user
                     plant_of_the_day_permission, _ = sustainability.permissions.plant_of_the_day_permission
-                    if not user.has_perm(plant_of_the_day_permission.codename):
+                    if not user.has_perm('sustainability.add_plant_of_the_day'):
                         user.user_permissions.add(plant_of_the_day_permission)
                         gmcode = GameMasterCode.objects.get(code=code)
                         gmcode.used = True
@@ -537,4 +536,5 @@ def code_enter_view(request):
                         return redirect('home')
             else:
                 messages.error(request, 'Invalid code.')
-    return render(request, 'Sustainability/code_entry.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'Sustainability/code_entry.html', {'has_permission': has_permission,})
