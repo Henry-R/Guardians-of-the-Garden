@@ -16,7 +16,7 @@ from rest_framework.reverse import reverse
 import sustainability.permissions
 import sustainability.permissions
 from sustainability.forms import ImageCaptureForm, PlantOfTheDayForm, LeaderboardForm, JoinLeaderboardForm, \
-    ChangeDetailsForm, BecomeGameMasterForm
+    ChangeDetailsForm, BecomeGameMasterForm, NonGameMLeaderboardForm
 from sustainability.models import Card, UsersCard, Userprofile, Leaderboard, LeaderboardMember, Pack, GameMasterCode
 
 from sustainability.forms import ImageUploadForm
@@ -140,18 +140,33 @@ def leaderboard_list_view(request):
 @login_required()
 def create_leaderboard_view(request):
     if request.method == 'POST':
-        form = LeaderboardForm(request.POST)
-        if form.is_valid():
-            leaderboard_name = form.cleaned_data['leaderboard_name']
-            is_public = form.cleaned_data['is_public']
-            leaderboard = Leaderboard.objects.create(leaderboard_name=leaderboard_name, is_public=is_public)
-            LeaderboardMember.objects.create(leaderboard_id=leaderboard, member_id=request.user)
-            return redirect('leaderboard')
+        user = request.user
+        plant_of_the_day_permission, _ = sustainability.permissions.plant_of_the_day_permission
+        if user.has_perm(plant_of_the_day_permission.codename):
+            form = LeaderboardForm(request.POST)
+            if form.is_valid():
+                leaderboard_name = form.cleaned_data['leaderboard_name']
+                is_public = form.cleaned_data['is_public']
+                leaderboard = Leaderboard.objects.create(leaderboard_name=leaderboard_name, is_public=is_public)
+                LeaderboardMember.objects.create(leaderboard_id=leaderboard, member_id=request.user)
+                return redirect('leaderboard')
+        else:
+            form = NonGameMLeaderboardForm(request.POST)
+            if form.is_valid():
+                leaderboard_name = form.cleaned_data['leaderboard_name']
+                is_public = False
+                leaderboard = Leaderboard.objects.create(leaderboard_name=leaderboard_name, is_public=is_public)
+                LeaderboardMember.objects.create(leaderboard_id=leaderboard, member_id=request.user)
+                return redirect('leaderboard')
     else:
-        form = LeaderboardForm()
+        user = request.user
+        plant_of_the_day_permission, _ = sustainability.permissions.plant_of_the_day_permission
+        if user.has_perm(plant_of_the_day_permission.codename):
+            form = LeaderboardForm()
+        else:
+            form = NonGameMLeaderboardForm()
     has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     return render(request, 'sustainability/create_leaderboard.html', {'form': form, 'has_permission': has_permission})
-
 
 @login_required()
 def join_leaderboard(request):
@@ -229,8 +244,12 @@ def users_cards_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
     has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
@@ -368,8 +387,14 @@ def upload_plant_view(request):
                     'has_permission': has_permission,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
     has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
@@ -431,8 +456,9 @@ def capture_plant_view(request):
                                 user_id=request.user,
                                 card_id=plant_of_the_day_card
                             )
+                            request.user.potd_bonus()
                             if created:
-                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your collection."
+                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your collection. You have collected 3 bonus points :)"
                             else:
                                 match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your collection."
                         elif latitude is None or longitude is None:
@@ -456,8 +482,14 @@ def capture_plant_view(request):
                     'has_permission': has_permission,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
     has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
