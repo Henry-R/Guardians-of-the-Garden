@@ -20,10 +20,10 @@
             {% endif %}
             {% if result %}
               <div class="details">
-                <p><strong>Scientific Name:</strong> {{ result.species.scientificName }}</p>
+                <!--<p><strong>Scientific Name:</strong> {{ result.species.scientificName }}</p>-->
                 <p><strong>Common Names:</strong> {{ result.species.commonNames|join:", " }}</p>
                 <p><strong>Family:</strong> {{ result.species.family.scientificName }}</p>
-                <p><strong>Score:</strong> {{ result.score }}</p>
+                <!--<p><strong>Score:</strong> {{ result.score }}</p>-->
               </div>
               {% if match_message %}
                 <div class="details">
