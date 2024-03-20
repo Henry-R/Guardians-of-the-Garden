@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 import environ
 import requests
 from rest_framework.reverse import reverse
@@ -386,9 +387,9 @@ def capture_plant_view(request):
             image_data = form.cleaned_data['image_data']
             latitude = form.cleaned_data.get('latitude')
             longitude = form.cleaned_data.get('longitude')
-            format, imgstr = image_data.split(
+            img_format, imgstr = image_data.split(
                 ';base64,')  # Assumes image_data is in the format: "data:image/png;base64,iVBORw0KGgo..."
-            ext = format.split('/')[-1]  # Determines the extension (png, jpg, etc.)
+            ext = img_format.split('/')[-1]  # Determines the extension (png, jpg, etc.)
             image_file = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
             # Prepares the request to the PlantNet API
             api_url = 'https://my-api.plantnet.org/v2/identify/all'
@@ -415,9 +416,10 @@ def capture_plant_view(request):
                     today = timezone.now().date()  # Gets today's date
                     # Retrieves the PlantOfTheDay object for today
                     plant_of_the_day_card = PlantOfTheDay.objects.get(date=today).plant
-                    plant_of_the_day_name = plant_of_the_day_card.name.lower()  # Gets the name of the plant of the day, converting it to lowercase
+                    # Gets the name of the plant of the day, converting it to lowercase
+                    plant_of_the_day_name = plant_of_the_day_card.name.lower()
 
-                    # Checks if the plant of the day's name is contained within any of the common names returned by the API
+                    # Checks if the plant of the day's name is contained in any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
                     if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
@@ -431,9 +433,14 @@ def capture_plant_view(request):
                             user.all_cards_in_pack_bonus(plant_of_the_day_card.card_id)
                             request.user.potd_bonus()
                             if created:
-                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your garden. You have collected 3 bonus points :)"
+                                match_message = (f"Congratulations! Your plant is related to the Plant of the Day "
+                                                 f"({plant_of_the_day_card.name}) and was taken in a valid location! "
+                                                 f"A new card has been added to your garden. "
+                                                 f"You have collected 3 bonus points :)")
                             else:
-                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your garden."
+                                match_message = (f"Congratulations! Your plant matches the Plant of the Day "
+                                                 f"({plant_of_the_day_card.name}) and was taken in a valid location, "
+                                                 f"but you already have this card in your garden.")
                         else:
                             # Identify the card from API response's common names
                             identified_card = Card.get_card_by_common_name(common_names)
@@ -446,14 +453,16 @@ def capture_plant_view(request):
                                 user = request.user
                                 user.all_cards_in_pack_bonus(identified_card.card.id)
                                 if created:
-                                    match_message = "The plant you identified doesnt match the Plant of the Day. A new card has been added to your garden"
+                                    match_message = ("The plant you identified doesnt match the Plant of the Day. "
+                                                     "A new card has been added to your garden")
                                 else:
                                     match_message = "The plant you identified is already in your garden."
                             else:
                                 # Handles the case where no matching card was found or it doesn't belong to any pack
                                 match_message = "No matching card in the packs or no match with Plant of the Day."
                     elif latitude is None or longitude is None:
-                        match_message = "No location provided, unable to verify if the plant was taken in a valid location."
+                        match_message = ("No location provided, "
+                                         "unable to verify if the plant was taken in a valid location.")
                     else:
                         match_message = "The location of the plant is invalid, unable to collect card."
 
