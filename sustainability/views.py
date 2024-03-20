@@ -511,6 +511,8 @@ def leave_leaderboard(request, leaderboard_id):
         if LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).exists():
             # Remove the user from the leaderboard members
             LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).delete()
+            if len(LeaderboardMember.objects.filter(leaderboard_id=leaderboard)) == 0:
+                leaderboard.delete()
         return redirect(
             'leaderboard')  # Redirect to the home page or any other appropriate URL after leaving the leaderboard
     return None
