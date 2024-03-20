@@ -331,3 +331,13 @@ a.sidebar-link {
     width: 100vh;
     position: absolute;
 }
+
+.btn-spaced {
+    padding: 50px;
+}
+
+.video-capture {
+    height: 560px;
+    width: 480px;
+    margin: 20px;
+}
