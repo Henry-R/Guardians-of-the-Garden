@@ -31,18 +31,21 @@ def home(request):
     except PlantOfTheDay.DoesNotExist:
         current_plant = None
         # Render the index page
-    return render(request, 'sustainability/home.html', {'current_plant': current_plant})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+
+    return render(request, 'sustainability/home.html', {'current_plant': current_plant, 'has_permission': has_permission})
 
 
 # Exeter view
 def exeter_view(request):
-    return render(request, 'sustainability/exeter.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/exeter.html', {'has_permission': has_permission})
 
 
 # View to edit the plant of the day - only for game masters with the permission
 @login_required()
 def plant_of_the_day_view(request):
-    if not request.user.user_permissions.filter(codename=sustainability.permissions.ADD_PLANT_OF_THE_DAY):
+    if not  request.user.has_perm('sustainability.add_plant_of_the_day'):
         return redirect('home')
     # Get html form post request from the edit plant of the day page.
     if request.method == 'POST':
@@ -63,13 +66,15 @@ def plant_of_the_day_view(request):
             current_plant = PlantOfTheDay.objects.get(date=timezone.now().date()).plant
         except PlantOfTheDay.DoesNotExist:
             current_plant = "Not selected"
-    return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/add_plant_of_the_day.html', {'form': form, 'current_plant': current_plant, 'has_permission': has_permission})
 
 
 # Account view shows the options the user has available such as viewing cards and taking a photo
 @login_required()
 def account_view(request):
-    return render(request, 'sustainability/user.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/user.html', {'has_permission': has_permission})
 
 
 @login_required()
@@ -116,9 +121,10 @@ def leaderboard_view(request, leaderboard_id):
     invite_link = request.build_absolute_uri(
         reverse('join_leaderboard') + f'?leaderboard_code={leaderboard.leaderboard_code}')
     # Pass the user profiles to the template
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     return render(request, 'sustainability/leaderboard.html',
                   {'user_profiles': user_profiles, 'leaderboard': leaderboard, 'invite_link': invite_link,
-                   'user_in_leaderboard': user_in_leaderboard})
+                   'user_in_leaderboard': user_in_leaderboard, 'has_permission': has_permission})
 
 
 @login_required()
@@ -126,9 +132,9 @@ def leaderboard_list_view(request):
     leaderboards = LeaderboardMember.objects.filter(member_id=request.user).values_list('leaderboard_id', flat=True)
     leaderboard_list = Leaderboard.objects.filter(leaderboard_id__in=leaderboards)
     public_list = Leaderboard.objects.filter(is_public=True)
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     return render(request, 'sustainability/leaderboard_list.html',
-                  {'leaderboard_list': leaderboard_list, 'public_list': public_list})
+                  {'leaderboard_list': leaderboard_list, 'public_list': public_list, 'has_permission': has_permission})
 
 
 @login_required()
@@ -159,9 +165,8 @@ def create_leaderboard_view(request):
             form = LeaderboardForm()
         else:
             form = NonGameMLeaderboardForm()
-    
-    return render(request, 'sustainability/create_leaderboard.html', {'form': form})
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/create_leaderboard.html', {'form': form, 'has_permission': has_permission})
 
 @login_required()
 def join_leaderboard(request):
@@ -182,7 +187,8 @@ def join_leaderboard(request):
             return redirect('leaderboard_detail', leaderboard_id=leaderboard.leaderboard_id)
     else:
         form = JoinLeaderboardForm(initial=initial_data)
-    return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/join_leaderboard.html', {'form': form, 'initial_data': initial_data, 'has_permission': has_permission})
 
 # User cards view shows a list of all possible cards, the ones that are not owned by the user are greyed out
 @login_required()
@@ -246,7 +252,7 @@ def users_cards_view(request):
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
-
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
     context = {
         'packob1': packs[0],
         'pack1': pack_list[0],
@@ -260,7 +266,9 @@ def users_cards_view(request):
         'pack5': pack_list[4],
         'user_owned_cards': user_owned_cards,
         'form': form,
+        'has_permission': has_permission,
     }
+
     return render(request, 'sustainability/cards.html', context=context)
 
 
@@ -290,12 +298,14 @@ def user_account_view(request):
                 messages.error(request, 'Invalid code.')
 
     user = get_user(request)
-    return render(request, 'sustainability/account.html', context={'user': user})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/account.html', context={'user': user, 'has_permission': has_permission,})
 
 
 @login_required
 def identify_plant_view(request):
-    return render(request, 'sustainability/cards.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/cards.html', {'has_permission': has_permission,})
 
 
 @login_required
@@ -336,22 +346,27 @@ def upload_plant_view(request):
                 match_message = None
 
                 # Renders the result template with the collected information
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
             else:
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
-    return render(request, 'sustainability/cards.html', {'form': form})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/cards.html', {'form': form, 'has_permission': has_permission,})
 
 
 @login_required
@@ -426,22 +441,27 @@ def capture_plant_view(request):
 
 
                 # Renders the result template with the collected information
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
             else:
+                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
+                    'has_permission': has_permission,
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
-    return render(request, 'sustainability/capture_form.html', {'form': form})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/capture_form.html', {'form': form, 'has_permission': has_permission,})
 
 
 def is_within_area(latitude, longitude):
@@ -459,6 +479,8 @@ def leave_leaderboard(request, leaderboard_id):
         if LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).exists():
             # Remove the user from the leaderboard members
             LeaderboardMember.objects.filter(leaderboard_id=leaderboard, member_id=request.user).delete()
+            if len(LeaderboardMember.objects.filter(leaderboard_id=leaderboard)) == 0:
+                leaderboard.delete()
         return redirect(
             'leaderboard')  # Redirect to the home page or any other appropriate URL after leaving the leaderboard
     return None
@@ -474,7 +496,8 @@ def change_details(request):
             return redirect('account')
     else:
         form = ChangeDetailsForm(instance=request.user)
-    return render(request, 'sustainability/change_details.html', {'form': form})
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'sustainability/change_details.html', {'form': form, 'has_permission': has_permission,})
 
 
 from django.contrib.auth.models import User
@@ -492,7 +515,7 @@ def code_enter_view(request):
                 if not gamemastercode.used:
                     user = request.user
                     plant_of_the_day_permission, _ = sustainability.permissions.plant_of_the_day_permission
-                    if not user.has_perm(plant_of_the_day_permission.codename):
+                    if not user.has_perm('sustainability.add_plant_of_the_day'):
                         user.user_permissions.add(plant_of_the_day_permission)
                         gmcode = GameMasterCode.objects.get(code=code)
                         gmcode.used = True
@@ -501,4 +524,5 @@ def code_enter_view(request):
                         return redirect('home')
             else:
                 messages.error(request, 'Invalid code.')
-    return render(request, 'Sustainability/code_entry.html')
+    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
+    return render(request, 'Sustainability/code_entry.html', {'has_permission': has_permission,})
