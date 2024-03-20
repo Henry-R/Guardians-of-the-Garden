@@ -394,7 +394,7 @@ def capture_plant_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
 
