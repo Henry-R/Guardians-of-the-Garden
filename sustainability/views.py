@@ -70,6 +70,12 @@ def plant_of_the_day_view(request):
 def account_view(request):
     return render(request, 'sustainability/user.html')
 
+
+@login_required()
+def change_details():
+    pass
+
+
 # Part of account view
 @login_required
 def delete_account(request):
