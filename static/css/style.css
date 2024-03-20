@@ -312,13 +312,14 @@ a.sidebar-link {
     opacity: 0;
     font-weight: 100;
     font-size: small;
-    
+    padding: 10px;
 }
 
 .card:hover .card-description {
     opacity: 1;
-    bottom: 24px;
     z-index: 12;
+    width:100%;
+    bottom: 0;
 }
 
 .plant-photo {
@@ -349,12 +350,4 @@ a.sidebar-link {
     height: 560px;
     width: 480px;
     margin: 20px;
-}
-
-#signup .row,
-#login .row {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
 }

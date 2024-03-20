@@ -8,10 +8,8 @@
         <img src="{{ card.plant_photo.url }}" alt="Plant Photo" class="plant-photo">
     </div>
     <div class="card-description">
-        <div class="description-header fw-semiblold">
-            About {{ card.name }}
-        </div>
-        {{ card.description }}
+        <h5 class="fw-semibold">About {{ card.name }}</h5> 
+        <p>{{ card.description }}</p>
     </div>
 </div>
 
