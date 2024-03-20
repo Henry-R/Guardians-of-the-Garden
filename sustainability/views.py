@@ -471,11 +471,6 @@ def change_details(request):
         
         if form.is_valid():
             form.save()
-            #user_profile = Userprofile.objects.get(pk=request.user)
-            #user_profile.username = form.cleaned_data['username']
-            #user_profile.email = form.cleaned_data['email']
-            #user_profile.password = form.cleaned_data['password']
-            #user_profile.save()
             return redirect('account')
     else:
         form = ChangeDetailsForm(instance=request.user)
