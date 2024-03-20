@@ -1,4 +1,5 @@
 import base64
+import os
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -10,6 +11,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+import environ
 import requests
 from rest_framework.reverse import reverse
 
@@ -478,7 +480,8 @@ def capture_plant_view(request):
 
 def is_within_area(latitude, longitude):
     # returns True if the coordinates are within the desired area
-    uni_lat, uni_lon = 50.7354, -3.5339  # University of Exeter's main coordinates (approximate)
+    uni_lat = float(os.environ['UNI_LATITUDE'])
+    uni_lon = float(os.environ['UNI_LONGITUDE'])
     radius = 0.01  # Approximate "radius" in degrees to consider a location valid
     return abs(float(latitude) - uni_lat) <= radius and abs(float(longitude) - uni_lon) <= radius
 
