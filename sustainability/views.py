@@ -354,8 +354,12 @@ def upload_plant_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
     return render(request, 'sustainability/cards.html', {'form': form})
@@ -439,8 +443,12 @@ def capture_plant_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
     return render(request, 'sustainability/capture_form.html', {'form': form})
