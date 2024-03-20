@@ -331,3 +331,7 @@ a.sidebar-link {
     width: 100vh;
     position: absolute;
 }
+
+.btn-spaced {
+    margin: 100px;
+}
