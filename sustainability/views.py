@@ -416,9 +416,8 @@ def capture_plant_view(request):
                     # Checks if the plant of the day's name is contained within any of the common names returned by the API
                     common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                     is_match = any(plant_of_the_day_name in common_name.lower() for common_name in common_names)
-
-                    if is_match:
-                        if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
+                    if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
+                        if is_match:
                             # Assigns the matched card to the user, creating a new UsersCard object if necessary
                             user_card, created = UsersCard.objects.get_or_create(
                                 user_id=request.user,
@@ -426,42 +425,51 @@ def capture_plant_view(request):
                             )
                             request.user.potd_bonus()
                             if created:
-                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your collection. You have collected 3 bonus points :)"
+                                match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your garden. You have collected 3 bonus points :)"
                             else:
-                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your collection."
-                        elif latitude is None or longitude is None:
-                            match_message = "No location provided, unable to verify if the plant was taken in a valid location."
+                                match_message = f"Congratulations! Your plant matches the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location, but you already have this card in your garden."
                         else:
-                            match_message = "The location of the plant is invalid, unable to collect card."
+                            # Identify the card from API response's common names
+                            identified_card = Card.get_card_by_common_name(common_names)
+                            if identified_card:
+                                # If the identified card exists and belongs to a pack, add it to the user's collection
+                                user_card, created = UsersCard.objects.get_or_create(
+                                user_id=request.user,
+                                card_id=identified_card
+                                )
+                                if created:
+                                    match_message = "The plant you identified doesnt match the Plant of the Day. A new card has been added to your garden"
+                                else:
+                                    match_message = "The plant you identified is already in your garden."
+                            else:
+                                # Handles the case where no matching card was found or it doesn't belong to any pack
+                                match_message = "No matching card in the packs or no match with Plant of the Day."
+                    elif latitude is None or longitude is None:
+                            match_message = "No location provided, unable to verify if the plant was taken in a valid location."
                     else:
-                        match_message = "The plant you identified doesn't match the Plant of the Day."
+                            match_message = "The location of the plant is invalid, unable to collect card."
 
                 except PlantOfTheDay.DoesNotExist:
                     match_message = "There is no Plant of the Day set for today."
 
 
                 # Renders the result template with the collected information
-                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
-                    'has_permission': has_permission,
                 })
             else:
-                has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
                 return render(request, 'sustainability/plant_identification_results.html', {
                     'best_match': best_match,
                     'result': first_result,
                     'match_message': match_message,
                     'current_plant': plant_of_the_day_card,
-                    'has_permission': has_permission,
                 })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
-    has_permission = request.user.has_perm('sustainability.add_plant_of_the_day')
-    return render(request, 'sustainability/capture_form.html', {'form': form, 'has_permission': has_permission,})
+    return render(request, 'sustainability/capture_form.html', {'form': form})
 
 
 def is_within_area(latitude, longitude):
