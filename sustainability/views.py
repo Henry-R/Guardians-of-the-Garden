@@ -222,7 +222,7 @@ def users_cards_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             image_file = request.FILES['image']  # Retrieves the uploaded image from the form
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
@@ -326,7 +326,7 @@ def upload_plant_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             image_file = request.FILES['image']  # Retrieves the uploaded image from the form
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
