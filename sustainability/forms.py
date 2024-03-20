@@ -30,6 +30,7 @@ class ImageCaptureForm(forms.Form):
     latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
     longitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
+
 class ChangeDetailsForm(forms.ModelForm):
     username = forms.CharField(max_length=100,
                                required=True,
@@ -40,6 +41,7 @@ class ChangeDetailsForm(forms.ModelForm):
     class Meta:
         model = Userprofile
         fields = ['username', 'email']
+
 
 class BecomeGameMasterForm(forms.Form):
     code = forms.CharField(max_length=10, required=True)

@@ -2,6 +2,7 @@ import base64
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth import get_user
 from django.contrib.auth.decorators import permission_required
@@ -69,6 +70,23 @@ def plant_of_the_day_view(request):
 @login_required()
 def account_view(request):
     return render(request, 'sustainability/user.html')
+
+
+@login_required()
+def download_account(request):
+    user = Userprofile.objects.get(id=request.user.id)
+    groups = serializers.serialize('json', user.groups.all())
+    permissions = serializers.serialize('json', user.user_permissions.all())
+    return JsonResponse({
+        'username': user.username,
+        'first name': user.first_name,
+        'last name': user.last_name,
+        'email': user.email,
+        'score': user.score,
+        'groups': groups,
+        'permissions': permissions,
+    })
+
 
 # Part of account view
 @login_required
@@ -336,8 +354,12 @@ def upload_plant_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageUploadForm()
     return render(request, 'sustainability/cards.html', {'form': form})
@@ -421,8 +443,12 @@ def capture_plant_view(request):
                     'current_plant': plant_of_the_day_card,
                 })
             else:
-                # Returns an error response if the API request failed
-                return JsonResponse({'error': 'Failed to identify plant'}, status=response.status_code)
+                return render(request, 'sustainability/plant_identification_results.html', {
+                    'best_match': best_match,
+                    'result': first_result,
+                    'match_message': match_message,
+                    'current_plant': plant_of_the_day_card,
+                })
     else:  # Handles the case where the request is not a POST request, showing the form
         form = ImageCaptureForm()
     return render(request, 'sustainability/capture_form.html', {'form': form})
