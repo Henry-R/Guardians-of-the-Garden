@@ -1,4 +1,5 @@
 import base64
+import os
 
 from django.core.files.base import ContentFile
 from django.core import serializers
@@ -8,6 +9,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+import environ
 import requests
 from rest_framework.reverse import reverse
 
@@ -223,7 +225,7 @@ def users_cards_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             image_file = request.FILES['image']  # Retrieves the uploaded image from the form
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
@@ -326,7 +328,7 @@ def upload_plant_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             image_file = request.FILES['image']  # Retrieves the uploaded image from the form
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
@@ -394,7 +396,7 @@ def capture_plant_view(request):
                 "include-related-images": "false",
                 "no-reject": "false",
                 "lang": "en",
-                "api-key": "2b10PCRgbtOTBNAsfjzxgiMjD"
+                "api-key": os.environ["PLANT_AI_API_KEY"]
             }
             files = {'images': (image_file.name, image_file, 'image/jpeg')}
 
@@ -425,6 +427,8 @@ def capture_plant_view(request):
                                 user_id=request.user,
                                 card_id=plant_of_the_day_card
                             )
+                            user = request.user
+                            user.all_cards_in_pack_bonus(plant_of_the_day_card.card_id)
                             request.user.potd_bonus()
                             if created:
                                 match_message = f"Congratulations! Your plant is related to the Plant of the Day ({plant_of_the_day_card.name}) and was taken in a valid location! A new card has been added to your garden. You have collected 3 bonus points :)"
@@ -439,6 +443,8 @@ def capture_plant_view(request):
                                     user_id=request.user,
                                     card_id=identified_card
                                 )
+                                user = request.user
+                                user.all_cards_in_pack_bonus(identified_card.card.id)
                                 if created:
                                     match_message = "The plant you identified doesnt match the Plant of the Day. A new card has been added to your garden"
                                 else:
@@ -475,7 +481,8 @@ def capture_plant_view(request):
 
 def is_within_area(latitude, longitude):
     # returns True if the coordinates are within the desired area
-    uni_lat, uni_lon = 50.7354, -3.5339  # University of Exeter's main coordinates (approximate)
+    uni_lat = float(os.environ['UNI_LATITUDE'])
+    uni_lon = float(os.environ['UNI_LONGITUDE'])
     radius = 0.01  # Approximate "radius" in degrees to consider a location valid
     return abs(float(latitude) - uni_lat) <= radius and abs(float(longitude) - uni_lon) <= radius
 
