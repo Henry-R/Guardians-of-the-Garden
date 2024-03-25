@@ -451,7 +451,7 @@ def capture_plant_view(request):
                                     card_id=identified_card
                                 )
                                 user = request.user
-                                user.all_cards_in_pack_bonus(identified_card.card.id)
+                                user.all_cards_in_pack_bonus(identified_card.card_id)
                                 if created:
                                     match_message = ("The plant you identified doesnt match the Plant of the Day. "
                                                      "A new card has been added to your garden")
@@ -478,7 +478,7 @@ def capture_plant_view(request):
                                 card_id=identified_card
                                 )
                                 user = request.user
-                                user.all_cards_in_pack_bonus(identified_card.card.id)
+                                user.all_cards_in_pack_bonus(identified_card.card_id)
                                 if created:
                                     match_message = "A new card has been added to your garden, there is no plant of the day."
                                 else:
