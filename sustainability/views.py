@@ -469,6 +469,7 @@ def capture_plant_view(request):
                 except PlantOfTheDay.DoesNotExist:
                     if latitude is not None and longitude is not None and is_within_area(latitude, longitude):
                         # Identify the card from API response's common names
+                            common_names = first_result.get('species', {}).get('commonNames', []) if first_result else []
                             identified_card = Card.get_card_by_common_name(common_names)
                             if identified_card:
                                 # If the identified card exists and belongs to a pack, add it to the user's collection
