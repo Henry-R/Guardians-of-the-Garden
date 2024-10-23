@@ -1,4 +1,8 @@
 # Guardians of the Garden
+
+This is a fork of a group university project I completed for my ECM2434 Group Software Engineering Project module, along with four fellow team members. In this module we achieved 71% and earned a first-class classification.
+___
+
 https://django-server-production-1cc2.up.railway.app/ (deprecated)
 ### Group Saltedcoffee
 ___
