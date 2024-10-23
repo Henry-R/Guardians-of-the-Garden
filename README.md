@@ -1,12 +1,12 @@
 # Guardians of the Garden
-https://django-server-production-1cc2.up.railway.app/
+https://django-server-production-1cc2.up.railway.app/ (deprecated)
 ### Group Saltedcoffee
 ___
 
 Guardians of the Garden is a competitive plant collecting game that encourages the user to explore and learn about their local flora.
 * Take photos of real plants to collect cards and earn score
 * Compete with your friends on public and private leaderboards
-* Learn about many different plants in the Learn
+* Learn about many different plants
 * Complete packs of cards to earn extra points
 * Modular, can be easily modified to work with other universities' campuses
 
